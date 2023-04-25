@@ -8,7 +8,12 @@ Input Prompt: `Find me a bar that can host a 20 person event near chelsea manhat
 
 https://user-images.githubusercontent.com/14324698/234191011-ec73af54-4a8e-4298-be1d-4252050f08c1.mov
 
+Demo made by [Richard He](https://twitter.com/RealRichomie)
 
+<h2 align="center"> Features </h2>
 
+- 🌎 Google search
+- 🧠 Long-term and short-term memory management
+- 🔨 Chrome actions: describe a webpage, scroll to element, click on buttons/links, input forms, switch tabs
 
-
+<h2 align="center"> Usage </h2>
