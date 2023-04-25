@@ -1,6 +1,6 @@
 # Chrome-GPT: An AutoGPT agent that uses Chrome interactively
  
-Chrome-GPT is a powerful AutoGPT agent that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable control of an entire Chrome session. With the ability to interactively scroll, click, drag, and input text on web pages, AutoGPT users can seamlessly navigate and manipulate web content.
+Chrome-GPT is a powerful AutoGPT agent that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable control of an entire Chrome session. With the ability to interactively scroll, click, drag, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
 
 <h2 align="center"> Demo </h2>
 
