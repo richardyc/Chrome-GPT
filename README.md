@@ -1,6 +1,6 @@
-# Chrome-GPT: An AutoGPT agent that uses Chrome interactively
+# Chrome-GPT: An AutoGPT agent that interacts with Chrome
  
-Chrome-GPT is a powerful AutoGPT agent that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable control of an entire Chrome session. With the ability to interactively scroll, click, drag, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
+Chrome-GPT is a powerful AutoGPT agent that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable control of an entire Chrome session. With the ability to interactively scroll, click, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
 
 <h2 align="center"> Demo </h2>
 
@@ -16,4 +16,18 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 - 🧠 Long-term and short-term memory management
 - 🔨 Chrome actions: describe a webpage, scroll to element, click on buttons/links, input forms, switch tabs
 
+<h2 align="center"> Requirements </h2>
+
+- Chrome
+- Python >3.8
+
+<h2 align="center"> Setup </h2>
+
+1. Set up your OpenAI [API Keys](https://platform.openai.com/account/api-keys) and add `OPENAI_API_KEY` env variable
+2. Install Python Requirements `poetry install`
+3. Open a poetry shell `poetry shell`
+4. Run chromegpt via `python -m chromegpt
+
 <h2 align="center"> Usage </h2>
+
+`python -m chromegpt -t "{your request}"`
