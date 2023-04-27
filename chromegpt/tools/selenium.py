@@ -1,5 +1,6 @@
 """Tool that calls Selenium."""
 import json
+import validators
 import re
 import time
 from typing import List, Optional, Union
@@ -44,7 +45,28 @@ class SeleniumWrapper:
 
     def google_search(self, query: str) -> str:
         safe_string = urllib.parse.quote_plus(query)
-        return self.describe_website("https://www.google.com/search?q="+safe_string)
+        # Go to website
+        self.describe_website("https://www.google.com/search?q="+safe_string)
+
+        # Scrape search results
+        results = []
+        search_results = self.driver.find_elements(By.CSS_SELECTOR, "#search .g")
+        for index, result in enumerate(search_results, start=1):
+            try:
+                title_element = result.find_element(By.CSS_SELECTOR, "h3")
+                link_element = result.find_element(By.CSS_SELECTOR, "a")
+                
+                title = title_element.text
+                link = link_element.get_attribute("href")
+                if title and link:
+                    results.append({
+                        "title": title,
+                        "position": index,
+                        "link": link,
+                    })
+            except Exception as e:
+                continue
+        return json.dumps(results)
 
     def describe_website(self, url: Optional[str] = None) -> str:
         """Describe the website."""
@@ -76,6 +98,9 @@ class SeleniumWrapper:
         return output
 
     def click_button_by_text(self, button_text: str) -> str:
+        # check if the button text is url
+        if validators.url(button_text):
+            return self.describe_website(button_text)
         before_content = self.describe_website()
         self.driver.switch_to.window(self.driver.window_handles[-1])
         # If there are string surrounded by double quotes, extract them
