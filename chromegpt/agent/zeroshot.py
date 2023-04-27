@@ -24,6 +24,7 @@ class ZeroShotAgent(ChromeGPTAgent):
         """Initialize the ZeroShotAgent."""
         self.model = model
         self.agent = get_zeroshot_agent(llm=ChatOpenAI(model_name=model, temperature=0), verbose=verbose)
+        self.agent.max_iterations = 10
 
     def run(self, tasks: List[str]) -> str:
         self.agent.run(" ".join(tasks))

@@ -3,15 +3,17 @@ import json
 import re
 import time
 from typing import List, Optional, Union
+from pydantic import BaseModel, Field
 
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-from chromegpt.tools.utils import get_all_text_elements, prettify_text
+from chromegpt.tools.utils import get_all_text_elements, prettify_text, truncate_string_from_last_occurrence
 
 
 class SeleniumWrapper:
@@ -46,11 +48,14 @@ class SeleniumWrapper:
             try:
                 self.driver.switch_to.window(self.driver.window_handles[-1])
                 self.driver.get(url)
-                time.sleep(2)
             except Exception as e:
-                return f"Cannot load website {url}. Make sure you have the correct and complete url."
+                return f"Cannot load website {url}. Make sure you input the correct and complete url starting with http:// or https://."
         # Extract main content
-        main_content = self._get_website_main_content()
+        time.sleep(2) # Wait for website to load
+        try:
+            main_content = self._get_website_main_content()
+        except StaleElementReferenceException as e:
+            return "Website still loading, please wait a few seconds and try again."
         if main_content:
             output += f"{main_content}\n"
 
@@ -60,14 +65,21 @@ class SeleniumWrapper:
             output += f"{interactable_content}\n"
 
         # Extract form inputs
-        if self.driver.find_elements(By.TAG_NAME, 'input'):
-            output += f"Found form inputs on current page. Use find_form function to get the input form details.\n"
-
+        form_fields = self._find_form_fields()
+        if form_fields:
+            output += "Text Input Fields: " + str(form_fields)
         return output
 
     def click_button_by_text(self, button_text: str) -> str:
+        before_content = self.describe_website()
         self.driver.switch_to.window(self.driver.window_handles[-1])
-        time.sleep(1)
+        # If there are string surrounded by double quotes, extract them
+        if '"' in button_text:
+            try:
+                button_text = re.findall(r'"([^"]*)"', button_text)[0]
+            except IndexError:
+                # No text surrounded by double quotes
+                pass
         try:
             buttons = self.driver.find_elements(By.XPATH, "//button")
             links = self.driver.find_elements(By.XPATH, "//a")
@@ -78,19 +90,8 @@ class SeleniumWrapper:
                 return "No interactable buttons found in the website. Try another website."
 
             selected_element = None
-            if "button" in button_text.lower():
-                button_text = button_text.lower().replace("button", "").strip()
-            if "link" in button_text.lower():
-                button_text = button_text.lower().replace("link", "").strip()
-            # If there are string surrounded by double quotes, extract them
-            if '"' in button_text:
-                try:
-                    button_text = re.findall(r'"([^"]*)"', button_text)[0]
-                except IndexError:
-                    # No text surrounded by double quotes
-                    pass
             for element in elements:
-                text = prettify_text(element.text)
+                text = prettify_text(element.text, 50)
                 if text.lower() == button_text.lower() or button_text.lower() in text.lower():
                     selected_element = element
                     break
@@ -105,50 +106,89 @@ class SeleniumWrapper:
             actions = ActionChains(self.driver)
             actions.move_to_element(element).click().perform()
             # self.driver.execute_script("arguments[0].click();", selected_element)
-            output = f"Clicked interactable element with text: {button_text}\n"
-            output += self.describe_website()
+            time.sleep(1)
+            after_content = self.describe_website()
+            if before_content == after_content:
+                output = f"Clicked interactable element but nothing changed on the website."
+            else:
+                output = f"Clicked interactable element and the website changed. Now "
+                output += self.describe_website()
             return output
         except WebDriverException as e:
             return f"Error clicking button with text '{button_text}', message: {e.msg}"
 
     def find_form_inputs(self, url: str) -> str:
         """Find form inputs on the website."""
-        if url != self.driver.current_url:
-            self.driver.get(url)
-            time.sleep(1)
-        fields = ""
-        for element in self.driver.find_elements(By.TAG_NAME, 'input'):
-            label_txt = element.find_element(By.XPATH, "..")
-            if label_txt.text and "\n" not in label_txt.text and len(label_txt.text) < 50:
-                fields += f"{label_txt.text}, "
+        fields = self._find_form_fields(url)
         if fields:
-            form_inputs = "Form Input Fields: " + fields
+            form_inputs = "Form Input Fields: " + str(fields)
         else:
             form_inputs = "No form inputs found on current page. Try another website."
         return form_inputs
     
+    def _find_form_fields(self, url: Optional[str]=None) -> List[str]:
+        """Find form fields on the website."""
+        if url and url != self.driver.current_url and url.startswith("http"):
+            try:
+                self.driver.get(url)
+                time.sleep(1)
+            except WebDriverException as e:
+                return f"Error loading url {url}, message: {e.msg}"
+        fields = []
+        for element in self.driver.find_elements(By.TAG_NAME, 'textarea') + self.driver.find_elements(By.TAG_NAME, 'input'):
+            label_txt = element.get_attribute('name') or element.get_attribute('aria-label') or element.find_element(By.XPATH, "..").text
+            if label_txt and "\n" not in label_txt and len(label_txt) < 100 and label_txt not in fields:
+                fields.append(label_txt)
+        return fields
+
     def fill_out_form(self, form_input: Union[str, dict[str, str]]) -> str:
         """fill out form by form field name and input name"""
-        filled = False
+        before_content = self.describe_website()
+        filled_element = None
+        # Clean up form input
+        form_input = truncate_string_from_last_occurrence(form_input, "}")
         if type(form_input) == str:
-            form_input = json.loads(form_input)
+            try:
+                form_input = json.loads(form_input)
+            except json.decoder.JSONDecodeError:
+                return 'Invalid JSON input. Please check your input is JSON format and try again. Make sure to use double quotes for strings. Example input: {"email": "foo@bar.com","name": "foo bar"}'
         try:
-            for element in self.driver.find_elements(By.TAG_NAME, 'input'):
-                label_txt = element.find_element(By.XPATH, "..")
-                if label_txt.text:
+            for element in self.driver.find_elements(By.TAG_NAME, 'textarea') + self.driver.find_elements(By.TAG_NAME, 'input'):
+                label_txt = element.get_attribute('name') or element.get_attribute('aria-label') or element.find_element(By.XPATH, "..").text
+                if label_txt:
                     for key in form_input.keys(): # type: ignore
-                        if key.lower() in label_txt.text.lower() and len(label_txt.text) - len(key) < 10:
-                            # Scroll the element into view
-                            self.driver.execute_script("arguments[0].scrollIntoView();", element)
-                            time.sleep(1)  # Allow some time for the page to settle
-                            element.send_keys(form_input[key])
-                            filled = True
-                            break
-            if not filled:
-                return f"Cannot find form with input: {form_input.keys()}."
-            return f"Successfully filled out form with input: {form_input}"
+                        if key.lower() == label_txt.lower() or (key.lower() in label_txt.lower() and len(label_txt) - len(key) < 10):
+                            try:
+                                # Scroll the element into view
+                                self.driver.execute_script("arguments[0].scrollIntoView();", element)
+                                time.sleep(1)  # Allow some time for the page to settle
+                                element.send_keys(form_input[key])
+                                filled_element = element
+                                break
+                            except WebDriverException as e:
+                                continue
+            if not filled_element:
+                return f"Cannot find form with input: {form_input.keys()}. Available form inputs: {self._find_form_fields()}"
+            filled_element.send_keys(Keys.RETURN)
+            after_content = self.describe_website()
+            if before_content != after_content:
+                return f"Successfully filled out form with input: {form_input}, website changed after filling out form. Now {after_content}"
+            else:
+                return f"Successfully filled out form with input: {form_input}, but website did not change after filling out form."
         except WebDriverException as e:
+            print(e)
             return f"Error filling out form with input {form_input}, message: {e.msg}"
+
+    def scroll(self, direction: str) -> str:
+        # Get the height of the current window
+        window_height = self.driver.execute_script('return window.innerHeight')
+        if direction == "up":
+            window_height = -window_height
+
+        # Scroll by 1 window height
+        self.driver.execute_script(f'window.scrollBy(0, {window_height})')
+        
+        return self.describe_website()
 
     def _get_website_main_content(self) -> str:
         texts = get_all_text_elements(self.driver)
@@ -156,8 +196,8 @@ class SeleniumWrapper:
         if not pretty_texts:
             return ""
 
-        description = "The website displays the following contents: "
-        description += '\n'.join(pretty_texts)
+        description = f"Current window displays the following contents: "
+        description += ' '.join(pretty_texts)
 
         return description
 
@@ -171,12 +211,32 @@ class SeleniumWrapper:
         interactable_texts = []
         for element in interactable_elements:
             button_text = element.text.strip()
-            if button_text and button_text not in interactable_texts:
-                button_text = prettify_text(button_text)
+            button_text = prettify_text(button_text, 50)
+            if button_text and button_text not in interactable_texts and element.is_enabled():
                 interactable_texts.append(button_text)
 
         if not interactable_texts:
             return ""
 
-        interactable_output = f"Here are a list of buttons/links that you can click: {json.dumps(interactable_texts)}"
+        interactable_output = f"Here are a list of buttons/links that you can click on the current window: {json.dumps(interactable_texts)}"
         return interactable_output
+    
+class DescribeWebsiteInput(BaseModel):
+    """Describe website input model."""
+    url: str = Field(..., description="full URL starting with http or https", example="https://www.google.com/")
+
+class ClickButtonInput(BaseModel):
+    """Click button input model."""
+    button_text: str = Field(..., description="text of the button/link you want to click", example="Contact Us")
+
+class FindFormInput(BaseModel):
+    """Find form input input model."""
+    url: str = Field(..., description="the current website url", example="https://www.google.com/")
+
+class FillOutFormInput(BaseModel):
+    """Fill out form input model."""
+    form_input: str = Field(..., description="json formatted dictionary with the input fields and their values", example='{"email": "foo@bar.com","name": "foo bar"}')
+
+class ScrollInput(BaseModel):
+    """Scroll window."""
+    direction: str = Field(..., description="direction to scroll, either 'up' or 'down'")
