@@ -5,7 +5,7 @@ from chromegpt.main import run_chromegpt
 
 @click.command()
 @click.option("--task", "-t", help="The task to execute", required=True)
-@click.option("--agent", "-a", help="The agent type to use", default="auto-gpt", type=click.Choice(['auto-gpt', 'baby-agi', 'zero-shot'], case_sensitive=False))
+@click.option("--agent", "-a", help="The agent type to use", default="zero-shot", type=click.Choice(['auto-gpt', 'baby-agi', 'zero-shot'], case_sensitive=False))
 @click.option("--model", "-m", help="The model to use", default="gpt-3.5-turbo")
 @click.option("--headless", help="Run in headless mode", is_flag=True)
 @click.option("--verbose", "-v", help="Run in verbose mode", is_flag=True)

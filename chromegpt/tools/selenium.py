@@ -11,6 +11,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException, StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
+import urllib.parse
 
 
 from chromegpt.tools.utils import get_all_text_elements, prettify_text, truncate_string_from_last_occurrence
@@ -40,6 +41,10 @@ class SeleniumWrapper:
     def __del__(self) -> None:
         """Close Selenium session."""
         self.driver.close()
+
+    def google_search(self, query: str) -> str:
+        safe_string = urllib.parse.quote_plus(query)
+        return self.describe_website("https://www.google.com/search?q="+safe_string)
 
     def describe_website(self, url: Optional[str] = None) -> str:
         """Describe the website."""
@@ -91,8 +96,8 @@ class SeleniumWrapper:
 
             selected_element = None
             for element in elements:
-                text = prettify_text(element.text, 50)
-                if text.lower() == button_text.lower() or button_text.lower() in text.lower():
+                text = prettify_text(element.text)
+                if element.is_displayed() and element.is_enabled() and (text.lower() == button_text.lower() or (button_text.lower() in text.lower() and abs(len(button_text)-len(text)) < 50)):
                     selected_element = element
                     break
             if not selected_element:
@@ -145,9 +150,9 @@ class SeleniumWrapper:
         """fill out form by form field name and input name"""
         before_content = self.describe_website()
         filled_element = None
-        # Clean up form input
-        form_input = truncate_string_from_last_occurrence(form_input, "}")
         if type(form_input) == str:
+            # Clean up form input
+            form_input = truncate_string_from_last_occurrence(form_input, "}")
             try:
                 form_input = json.loads(form_input)
             except json.decoder.JSONDecodeError:
@@ -196,7 +201,7 @@ class SeleniumWrapper:
         if not pretty_texts:
             return ""
 
-        description = f"Current window displays the following contents: "
+        description = f"Current window displays the following contents, try scrolling up or down to view more: "
         description += ' '.join(pretty_texts)
 
         return description
@@ -212,7 +217,7 @@ class SeleniumWrapper:
         for element in interactable_elements:
             button_text = element.text.strip()
             button_text = prettify_text(button_text, 50)
-            if button_text and button_text not in interactable_texts and element.is_enabled():
+            if button_text and button_text not in interactable_texts and element.is_displayed() and element.is_enabled():
                 interactable_texts.append(button_text)
 
         if not interactable_texts:
@@ -220,7 +225,11 @@ class SeleniumWrapper:
 
         interactable_output = f"Here are a list of buttons/links that you can click on the current window: {json.dumps(interactable_texts)}"
         return interactable_output
-    
+
+class GoogleSearchInput(BaseModel):
+    """Google search input model."""
+    query: str = Field(..., description="search query")
+
 class DescribeWebsiteInput(BaseModel):
     """Describe website input model."""
     url: str = Field(..., description="full URL starting with http or https", example="https://www.google.com/")

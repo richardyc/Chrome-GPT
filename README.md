@@ -20,6 +20,7 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 
 - Chrome
 - Python >3.8
+- [Poetry](https://python-poetry.org/docs/#installation)
 
 <h2 align="center"> Setup </h2>
 
@@ -30,4 +31,6 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 
 <h2 align="center"> Usage </h2>
 
-`python -m chromegpt -t "{your request}"`
+General Usage: `python -m chromegpt -t "{your request}"`
+
+For help: `python -m chromegpt --help`

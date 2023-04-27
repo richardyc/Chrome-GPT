@@ -1,4 +1,5 @@
 """Integration test for Selenium API Wrapper."""
+import json
 import pytest
 
 from chromegpt.tools.selenium import SeleniumWrapper
@@ -34,5 +35,11 @@ def test_google_fill(client: SeleniumWrapper) -> None:
     """Test that SeleniumWrapper can fill input form"""
     
     client.find_form_inputs("https://google.com")
-    output = client.fill_out_form({"q": "hello world"})
+    output = client.fill_out_form(json.dumps({"q": "hello world"}))
     assert "website changed after filling out form" in output
+
+def test_google_search(client: SeleniumWrapper) -> None:
+    """Test google search functionality"""
+    res = client.google_search("hello world")
+    assert "hello world" in res
+    assert "'q'" in res

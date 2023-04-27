@@ -1,6 +1,6 @@
 from typing import List
 
-from chromegpt.tools.selenium import ScrollInput, SeleniumWrapper, DescribeWebsiteInput, ClickButtonInput, FindFormInput, FillOutFormInput
+from chromegpt.tools.selenium import GoogleSearchInput, ScrollInput, SeleniumWrapper, DescribeWebsiteInput, ClickButtonInput, FindFormInput, FillOutFormInput
 from langchain.agents import initialize_agent, Tool
 
 from langchain.vectorstores import FAISS
@@ -41,6 +41,13 @@ def get_agent_tools() -> List[Tool]:
             description="useful for when you need to scroll up or down on the current website",
             args_schema=ScrollInput,
         ),
+        # TODO: Improve google search performance
+        # Tool(
+        #     name="google_search",
+        #     func=selenium.google_search,
+        #     description="perform a google search",
+        #     args_schema=GoogleSearchInput,
+        # )
     ]
     return tools
 
