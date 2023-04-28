@@ -45,8 +45,14 @@ class SeleniumWrapper:
 
     def google_search(self, query: str) -> str:
         safe_string = urllib.parse.quote_plus(query)
+        url = "https://www.google.com/search?q="+safe_string
         # Go to website
-        self.describe_website("https://www.google.com/search?q="+safe_string)
+        try:
+            self.driver.switch_to.window(self.driver.window_handles[-1])
+            self.driver.get(url)
+        except Exception as e:
+            return f"Cannot load website {url}. Try again later."
+
         # Scrape search results
         results = self._get_google_search_results()
         return "Which url would you like to goto? Provide the full url starting with http or https: " + json.dumps(results)
@@ -98,7 +104,7 @@ class SeleniumWrapper:
         # Extract form inputs
         form_fields = self._find_form_fields()
         if form_fields:
-            output += "Text Input Fields: " + str(form_fields)
+            output += "You can input text in these fields using fill_form function: " + str(form_fields)
         return output
 
     def click_button_by_text(self, button_text: str) -> str:
@@ -111,7 +117,6 @@ class SeleniumWrapper:
             for result in google_search_results:
                 if button_text.lower() in result["title"].lower():
                     return self.describe_website(result["link"])
-        before_content = self.describe_website()
         self.driver.switch_to.window(self.driver.window_handles[-1])
         # If there are string surrounded by double quotes, extract them
         if button_text.count('"') > 1:
@@ -139,6 +144,7 @@ class SeleniumWrapper:
                 return f"No interactable element found with text: {button_text}. Double check the button text and try again."
             
             # Scroll the element into view and Click the element using JavaScript
+            before_content = self.describe_website()
             actions = ActionChains(self.driver)
             actions.move_to_element(element).click().perform()
             time.sleep(1)
@@ -156,7 +162,7 @@ class SeleniumWrapper:
         """Find form inputs on the website."""
         fields = self._find_form_fields(url)
         if fields:
-            form_inputs = "Form Input Fields: " + str(fields)
+            form_inputs = "Available Form Input Fields: " + str(fields)
         else:
             form_inputs = "No form inputs found on current page. Try another website."
         return form_inputs
@@ -178,7 +184,6 @@ class SeleniumWrapper:
 
     def fill_out_form(self, form_input: Union[str, dict[str, str]]) -> str:
         """fill out form by form field name and input name"""
-        before_content = self.describe_website()
         filled_element = None
         if type(form_input) == str:
             # Clean up form input
@@ -204,6 +209,7 @@ class SeleniumWrapper:
                                 continue
             if not filled_element:
                 return f"Cannot find form with input: {form_input.keys()}. Available form inputs: {self._find_form_fields()}"
+            before_content = self.describe_website()
             filled_element.send_keys(Keys.RETURN)
             after_content = self.describe_website()
             if before_content != after_content:
@@ -232,7 +238,7 @@ class SeleniumWrapper:
             return ""
 
         description = f"Current window displays the following contents, try scrolling up or down to view more: "
-        description += ' '.join(pretty_texts)
+        description += json.dumps(pretty_texts)
 
         return description
 
@@ -250,10 +256,19 @@ class SeleniumWrapper:
             if button_text and button_text not in interactable_texts and element.is_displayed() and element.is_enabled():
                 interactable_texts.append(button_text)
 
-        if not interactable_texts:
-            return ""
-
-        interactable_output = f"Here are a list of buttons/links that you can click on the current window: {json.dumps(interactable_texts)}"
+        # Split up the links and the buttons
+        buttons = []
+        links = []
+        for text in interactable_texts:
+            if validators.url(text):
+                links.append(text)
+            else:
+                buttons.append(text)
+        interactable_output = ""
+        if links:
+            interactable_output += f"Goto these links: {json.dumps(links)}\n"
+        if buttons:
+            interactable_output += f"Click on these buttons: {json.dumps(buttons)}"
         return interactable_output
 
 class GoogleSearchInput(BaseModel):

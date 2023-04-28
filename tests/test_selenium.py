@@ -42,4 +42,4 @@ def test_google_search(client: SeleniumWrapper) -> None:
     """Test google search functionality"""
     res = client.google_search("hello world")
     assert "hello" in res
-    assert "'q'" in res
+    assert "Which url would you like to goto" in res
