@@ -47,7 +47,11 @@ class SeleniumWrapper:
         safe_string = urllib.parse.quote_plus(query)
         # Go to website
         self.describe_website("https://www.google.com/search?q="+safe_string)
+        # Scrape search results
+        results = self._get_google_search_results()
+        return "Which url would you like to goto? Provide the full url starting with http or https: " + json.dumps(results)
 
+    def _get_google_search_results(self) -> List[str]:
         # Scrape search results
         results = []
         search_results = self.driver.find_elements(By.CSS_SELECTOR, "#search .g")
@@ -66,7 +70,7 @@ class SeleniumWrapper:
                     })
             except Exception as e:
                 continue
-        return "Which url would you like to goto? Provide the full url starting with http or https: " + json.dumps(results)
+        return results
 
     def describe_website(self, url: Optional[str] = None) -> str:
         """Describe the website."""
@@ -101,6 +105,12 @@ class SeleniumWrapper:
         # check if the button text is url
         if validators.url(button_text):
             return self.describe_website(button_text)
+        # If it is google search, then fetch link from google
+        if self.driver.current_url.startswith("https://www.google.com/search"):
+            google_search_results = self._get_google_search_results()
+            for result in google_search_results:
+                if button_text.lower() in result["title"].lower():
+                    return self.describe_website(result["link"])
         before_content = self.describe_website()
         self.driver.switch_to.window(self.driver.window_handles[-1])
         # If there are string surrounded by double quotes, extract them
