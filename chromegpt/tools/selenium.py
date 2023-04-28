@@ -66,7 +66,7 @@ class SeleniumWrapper:
                     })
             except Exception as e:
                 continue
-        return "Select a link to goto from the search results: " + json.dumps(results)
+        return "Which url would you like to goto? Provide the full url starting with http or https: " + json.dumps(results)
 
     def describe_website(self, url: Optional[str] = None) -> str:
         """Describe the website."""
@@ -128,8 +128,7 @@ class SeleniumWrapper:
             if not selected_element:
                 return f"No interactable element found with text: {button_text}. Double check the button text and try again."
             
-            # Scroll the element into view
-            # Click the element using JavaScript
+            # Scroll the element into view and Click the element using JavaScript
             actions = ActionChains(self.driver)
             actions.move_to_element(element).click().perform()
             time.sleep(1)

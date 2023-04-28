@@ -48,7 +48,7 @@ class BabyAGIAgent(ChromeGPTAgent):
 
     def _get_baby_agi(self, verbose: bool = False, max_iterations: int = 20) -> BabyAGI:
         """Get the zero shot agent. Optimized for GPT-3.5 use."""
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+        llm=ChatOpenAI(model_name=self.model, temperature=0)
         tools = get_agent_tools()
         # Add ToDo tool for baby agi
         tools.append(self._get_todo_tool())

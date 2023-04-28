@@ -6,6 +6,8 @@ from langchain.agents import initialize_agent, Tool
 from langchain.vectorstores import FAISS
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import OpenAIEmbeddings
+from langchain.tools.file_management.write import WriteFileTool
+from langchain.tools.file_management.read import ReadFileTool
 
 def get_agent_tools() -> List[Tool]:
     """Get the tools that will be used by the AI agent."""
@@ -46,7 +48,10 @@ def get_agent_tools() -> List[Tool]:
             func=selenium.google_search,
             description="perform a google search",
             args_schema=GoogleSearchInput,
-        )
+        ),
+        # TODO: enable these tools
+        # ReadFileTool(root_dir="./"),
+        # WriteFileTool(root_dir="./"),
     ]
     return tools
 

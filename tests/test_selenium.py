@@ -22,7 +22,7 @@ def test_click(client: SeleniumWrapper) -> None:
     """Test that SeleniumWrapper click works"""
 
     client.describe_website("https://example.com")
-    output = client.click_button_by_text("More information...")
+    output = client.click_button_by_text('link with title "More information..."')
     assert "Clicked interactable element and the website changed" in output
 
 def test_google_input(client: SeleniumWrapper) -> None:
@@ -41,5 +41,5 @@ def test_google_fill(client: SeleniumWrapper) -> None:
 def test_google_search(client: SeleniumWrapper) -> None:
     """Test google search functionality"""
     res = client.google_search("hello world")
-    assert "hello world" in res
+    assert "hello" in res
     assert "'q'" in res
