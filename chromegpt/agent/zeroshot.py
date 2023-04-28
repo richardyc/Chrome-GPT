@@ -1,5 +1,6 @@
 """Module for the zero shot agent. Optimized for GPT-3.5 use."""
-from typing import List
+from typing import Any, Dict, List, Tuple
+import types
 from langchain import LLMChain, PromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import initialize_agent, Tool
@@ -9,7 +10,7 @@ from langchain.agents.agent import Agent
 from langchain.experimental import BabyAGI
 from chromegpt.agent.chromegpt_agent import ChromeGPTAgent
 from langchain.agents.mrkl.base import ZeroShotAgent as LangChainZeroShotAgent
-
+from langchain.schema import AgentAction
 
 from chromegpt.agent.utils import get_agent_tools, get_vectorstore
 
@@ -19,12 +20,22 @@ def get_zeroshot_agent(llm, verbose: bool = False) -> AgentExecutor:
     agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=verbose)
     return agent
 
+def _get_full_inputs(
+    self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any
+) -> Dict[str, Any]:
+    """Create the full inputs for the LLMChain from intermediate steps. Patched version limit to 5 intermediate steps."""
+    thoughts = self._construct_scratchpad(intermediate_steps[-5:])
+    new_inputs = {"agent_scratchpad": thoughts, "stop": self._stop}
+    full_inputs = {**kwargs, **new_inputs}
+    return full_inputs
+
 class ZeroShotAgent(ChromeGPTAgent):
     def __init__(self, model="gpt-3.5-turbo", verbose=False) -> None:
         """Initialize the ZeroShotAgent."""
         self.model = model
         self.agent = get_zeroshot_agent(llm=ChatOpenAI(model_name=model, temperature=0), verbose=verbose)
-        self.agent.max_iterations = 10
+        self.agent.max_iterations = 30
+        self.agent.agent.__dict__["get_full_inputs"] = types.MethodType(_get_full_inputs, self.agent.agent)
 
     def run(self, tasks: List[str]) -> str:
         self.agent.run(" ".join(tasks))

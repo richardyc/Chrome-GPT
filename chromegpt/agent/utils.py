@@ -1,5 +1,7 @@
 from typing import List
 
+from pydantic import BaseModel
+
 from chromegpt.tools.selenium import GoogleSearchInput, ScrollInput, SeleniumWrapper, DescribeWebsiteInput, ClickButtonInput, FindFormInput, FillOutFormInput
 from langchain.agents import initialize_agent, Tool
 
@@ -49,6 +51,13 @@ def get_agent_tools() -> List[Tool]:
             description="perform a google search",
             args_schema=GoogleSearchInput,
         ),
+        # TODO: Re-enable this, StopIteration error, cannot parse None as input
+        # Tool(
+        #     name="previous_webpage",
+        #     func=selenium.previous_webpage,
+        #     description="navigate back to the previous page in the browser history",
+        #     args_schema=BaseModel,
+        # )
         # TODO: enable these tools
         # ReadFileTool(root_dir="./"),
         # WriteFileTool(root_dir="./"),

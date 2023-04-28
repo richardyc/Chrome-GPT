@@ -43,6 +43,11 @@ class SeleniumWrapper:
         """Close Selenium session."""
         self.driver.close()
 
+    def previous_webpage(self) -> str:
+        """Go back in browser history."""
+        self.driver.back()
+        return self.describe_website()
+
     def google_search(self, query: str) -> str:
         safe_string = urllib.parse.quote_plus(query)
         url = "https://www.google.com/search?q="+safe_string
