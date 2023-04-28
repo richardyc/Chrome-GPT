@@ -66,7 +66,7 @@ class SeleniumWrapper:
                     })
             except Exception as e:
                 continue
-        return json.dumps(results)
+        return "Select a link to goto from the search results: " + json.dumps(results)
 
     def describe_website(self, url: Optional[str] = None) -> str:
         """Describe the website."""
@@ -81,7 +81,7 @@ class SeleniumWrapper:
         time.sleep(2) # Wait for website to load
         try:
             main_content = self._get_website_main_content()
-        except StaleElementReferenceException as e:
+        except WebDriverException as e:
             return "Website still loading, please wait a few seconds and try again."
         if main_content:
             output += f"{main_content}\n"
@@ -104,7 +104,7 @@ class SeleniumWrapper:
         before_content = self.describe_website()
         self.driver.switch_to.window(self.driver.window_handles[-1])
         # If there are string surrounded by double quotes, extract them
-        if '"' in button_text:
+        if button_text.count('"') > 1:
             try:
                 button_text = re.findall(r'"([^"]*)"', button_text)[0]
             except IndexError:
@@ -129,13 +129,9 @@ class SeleniumWrapper:
                 return f"No interactable element found with text: {button_text}. Double check the button text and try again."
             
             # Scroll the element into view
-            self.driver.execute_script("arguments[0].scrollIntoView();", selected_element)
-            time.sleep(1)  # Allow some time for the page to settle
-            
             # Click the element using JavaScript
             actions = ActionChains(self.driver)
             actions.move_to_element(element).click().perform()
-            # self.driver.execute_script("arguments[0].click();", selected_element)
             time.sleep(1)
             after_content = self.describe_website()
             if before_content == after_content:
