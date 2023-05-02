@@ -19,7 +19,7 @@ def get_zeroshot_agent(llm: ChatOpenAI, verbose: bool = False) -> AgentExecutor:
     """Get the zero shot agent. Optimized for GPT-3.5 use."""
     tools = get_agent_tools()
     agent = initialize_agent(
-        tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=verbose
+        tools, llm, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=verbose
     )
     return agent
 
