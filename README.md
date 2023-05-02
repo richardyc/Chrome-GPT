@@ -27,10 +27,10 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 1. Set up your OpenAI [API Keys](https://platform.openai.com/account/api-keys) and add `OPENAI_API_KEY` env variable
 2. Install Python Requirements `poetry install`
 3. Open a poetry shell `poetry shell`
-4. Run chromegpt via `python -m chromegpt
+4. Run chromegpt via `python -m chromegpt`
 
 <h2 align="center"> Usage </h2>
 
-General Usage: `python -m chromegpt -t "{your request}"`
+General Usage: `python -m chromegpt -v -t "{your request}"`
 
 For help: `python -m chromegpt --help`

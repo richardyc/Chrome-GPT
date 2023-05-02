@@ -5,8 +5,12 @@ lint_diff: PYTHON_FILES=$(shell git diff --name-only --diff-filter=d master | gr
 
 lint lint_diff:
 	poetry run mypy $(PYTHON_FILES)
-	poetry run black $(PYTHON_FILES) --check
+	poetry run black $(PYTHON_FILES) --check --preview
 	poetry run ruff .
+
+format:
+	poetry run black . --preview
+	poetry run ruff --select I --fix .
 
 tests:
 	poetry run pytest tests

@@ -2,22 +2,32 @@
 from typing import List
 
 from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.experimental import AutoGPT
+from langchain.experimental.autonomous_agents.autogpt.output_parser import (
+    AutoGPTOutputParser,
+)
+from langchain.tools.human.tool import HumanInputRun
+
 from chromegpt.agent.autogpt.prompt import AutoGPTPrompt
 from chromegpt.agent.chromegpt_agent import ChromeGPTAgent
-from langchain.experimental import AutoGPT
-from langchain.chat_models import ChatOpenAI
-from langchain.tools.human.tool import HumanInputRun
-from langchain.experimental.autonomous_agents.autogpt.output_parser import AutoGPTOutputParser
-
 from chromegpt.agent.utils import get_agent_tools, get_vectorstore
 
+
 class AutoGPTAgent(ChromeGPTAgent):
-    def __init__(self, model="gpt-4", verbose=False) -> None:
+    """AutoGPT agent for ChromeGPT. Note that this agent is optimized for GPT-4 use."""
+
+    def __init__(self, model: str = "gpt-4", verbose: bool = False) -> None:
         """Initialize the ZeroShotAgent."""
-        self.agent = self._get_autogpt_agent(llm=ChatOpenAI(model_name=model, temperature=0), verbose=verbose)
+        self.agent = self._get_autogpt_agent(
+            llm=ChatOpenAI(model_name=model, temperature=0),  # type: ignore
+            verbose=verbose,
+        )
         self.model = model
 
-    def _get_autogpt_agent(self, llm, verbose, human_in_the_loop=False) -> AutoGPT:
+    def _get_autogpt_agent(
+        self, llm: ChatOpenAI, verbose: bool, human_in_the_loop: bool = False
+    ) -> AutoGPT:
         vectorstore = get_vectorstore()
         tools = get_agent_tools()
         ai_name = "Jarvis"
@@ -33,7 +43,7 @@ class AutoGPTAgent(ChromeGPTAgent):
         chain = LLMChain(llm=llm, prompt=prompt)
         agent = AutoGPT(
             ai_name,
-            vectorstore.as_retriever(),
+            vectorstore.as_retriever(),  # type: ignore
             chain,
             AutoGPTOutputParser(),
             tools,

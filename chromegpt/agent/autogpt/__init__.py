@@ -1,2 +1,2 @@
 """Module for the AutoGPT agent."""
-from .autogpt import AutoGPTAgent
+from .autogpt import AutoGPTAgent  # noqa: F401
