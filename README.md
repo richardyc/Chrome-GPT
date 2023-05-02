@@ -20,12 +20,12 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 
 - Chrome
 - Python >3.8
-- [Poetry](https://python-poetry.org/docs/#installation)
+- Install [Poetry](https://python-poetry.org/docs/#installation)
 
 <h2 align="center"> Setup </h2>
 
 1. Set up your OpenAI [API Keys](https://platform.openai.com/account/api-keys) and add `OPENAI_API_KEY` env variable
-2. Install Python Requirements `poetry install`
+2. Install Python requirements via poetry `poetry install`
 3. Open a poetry shell `poetry shell`
 4. Run chromegpt via `python -m chromegpt`
 
