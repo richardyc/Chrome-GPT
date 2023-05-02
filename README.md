@@ -32,5 +32,5 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 <h2 align="center"> 🧠 Usage </h2>
 
 - GPT-3.5 Usage (Default): `python -m chromegpt -v -t "{your request}"`
-- GPT-4 Usage (Recommended): `python -m chromegpt -v -a auto-gpt -m gpt-4 -t "{your request}"`
+- GPT-4 Usage (Recommended, needs GPT-4 access): `python -m chromegpt -v -a auto-gpt -m gpt-4 -t "{your request}"`
 - For help: `python -m chromegpt --help`
