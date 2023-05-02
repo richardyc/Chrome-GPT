@@ -36,3 +36,17 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 - GPT-3.5 Usage (Default): `python -m chromegpt -v -t "{your request}"`
 - GPT-4 Usage (Recommended, needs GPT-4 access): `python -m chromegpt -v -a auto-gpt -m gpt-4 -t "{your request}"`
 - For help: `python -m chromegpt --help`
+```
+Usage: python -m chromegpt [OPTIONS]
+
+  Run ChromeGPT: An AutoGPT agent that interacts with Chrome
+
+Options:
+  -t, --task TEXT                 The task to execute  [required]
+  -a, --agent [auto-gpt|baby-agi|zero-shot]
+                                  The agent type to use
+  -m, --model TEXT                The model to use
+  --headless                      Run in headless mode
+  -v, --verbose                   Run in verbose mode
+  --help                          Show this message and exit.
+```
