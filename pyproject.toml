@@ -5,7 +5,6 @@ description = "An AutoGPT agent that uses Chrome interactively on your desktop"
 authors = ["Richard He <he.yucheng@outlook.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "chrome_gpt"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
