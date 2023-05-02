@@ -15,6 +15,8 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 - 🌎 Google search
 - 🧠 Long-term and short-term memory management
 - 🔨 Chrome actions: describe a webpage, scroll to element, click on buttons/links, input forms, switch tabs
+- 🤖 Supports multiple agent types: Zero-shot, BabyAGI and Auto-GPT
+- 🔥 (IN PROGRESS) Chrome plugin support
 
 <h2 align="center"> Requirements </h2>
 

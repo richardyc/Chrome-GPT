@@ -44,9 +44,10 @@ def get_agent_tools() -> List[BaseTool]:
         ),
         Tool(
             name="fill_form",
-            func=selenium.fill_out_form,
+            func=selenium.fill_out_form,  # type: ignore
             description=(
-                "useful for when you need to fill out a form on the current website"
+                "useful for when you need to fill out a form on the current website."
+                " Input should be a json formatted string"
             ),
             args_schema=FillOutFormInput,
         ),

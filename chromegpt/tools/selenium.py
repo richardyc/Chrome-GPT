@@ -3,7 +3,7 @@ import json
 import re
 import time
 import urllib.parse
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import validators
 from pydantic import BaseModel, Field
@@ -200,7 +200,7 @@ class SeleniumWrapper:
         except WebDriverException as e:
             return f"Error clicking button with text '{button_text}', message: {e.msg}"
 
-    def find_form_inputs(self, url: str) -> str:
+    def find_form_inputs(self, url: Optional[str] = None) -> str:
         """Find form inputs on the website."""
         fields = self._find_form_fields(url)
         if fields:
@@ -234,20 +234,26 @@ class SeleniumWrapper:
                 fields.append(label_txt)
         return str(fields)
 
-    def fill_out_form(self, form_input: Union[str, dict[str, str]]) -> str:
+    def fill_out_form(self, **kwargs: Any) -> str:
         """fill out form by form field name and input name"""
         filled_element = None
-        if type(form_input) == str:
+        if kwargs.get("form_input") and type(kwargs.get("form_input")) == str:
             # Clean up form input
-            form_input = truncate_string_from_last_occurrence(form_input, "}")
+            form_input_str = truncate_string_from_last_occurrence(
+                string=kwargs.get("form_input"), character="}"  # type: ignore
+            )
             try:
-                form_input = json.loads(form_input)
+                form_input = json.loads(form_input_str)
             except json.decoder.JSONDecodeError:
                 return (
                     "Invalid JSON input. Please check your input is JSON format and try"
                     " again. Make sure to use double quotes for strings. Example input:"
                     ' {"email": "foo@bar.com","name": "foo bar"}'
                 )
+        elif kwargs.get("form_input"):
+            form_input = kwargs.get("form_input")
+        else:
+            form_input = kwargs
         try:
             for element in self.driver.find_elements(
                 By.TAG_NAME, "textarea"
@@ -387,17 +393,19 @@ class ClickButtonInput(BaseModel):
 class FindFormInput(BaseModel):
     """Find form input input model."""
 
-    url: str = Field(
-        ..., description="the current website url", example="https://www.google.com/"
+    url: Optional[str] = Field(
+        default=None,
+        description="the current website url",
+        example="https://www.google.com/",
     )
 
 
 class FillOutFormInput(BaseModel):
     """Fill out form input model."""
 
-    form_input: str = Field(
-        ...,
-        description="json formatted dictionary with the input fields and their values",
+    form_input: Optional[str] = Field(
+        default=None,
+        description="json formatted string with the input fields and their values",
         example='{"email": "foo@bar.com","name": "foo bar"}',
     )
 
@@ -406,5 +414,5 @@ class ScrollInput(BaseModel):
     """Scroll window."""
 
     direction: str = Field(
-        ..., description="direction to scroll, either 'up' or 'down'"
+        default="down", description="direction to scroll, either 'up' or 'down'"
     )

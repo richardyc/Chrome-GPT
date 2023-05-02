@@ -1,5 +1,4 @@
 """Integration test for Selenium API Wrapper."""
-import json
 
 import pytest
 
@@ -37,7 +36,7 @@ def test_google_fill(client: SeleniumWrapper) -> None:
     """Test that SeleniumWrapper can fill input form"""
 
     client.find_form_inputs("https://google.com")
-    output = client.fill_out_form(json.dumps({"q": "hello world"}))
+    output = client.fill_out_form(q="hello world")
     assert "website changed after filling out form" in output
 
 
