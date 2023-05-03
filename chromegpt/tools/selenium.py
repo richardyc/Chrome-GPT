@@ -213,7 +213,10 @@ class SeleniumWrapper:
         """Find form fields on the website."""
         if url and url != self.driver.current_url and url.startswith("http"):
             try:
+                self.driver.switch_to.window(self.driver.window_handles[-1])
                 self.driver.get(url)
+                # Let driver wait for website to load
+                time.sleep(1)  # Wait for website to load
             except WebDriverException as e:
                 return f"Error loading url {url}, message: {e.msg}"
         fields = []
@@ -234,13 +237,13 @@ class SeleniumWrapper:
                 fields.append(label_txt)
         return str(fields)
 
-    def fill_out_form(self, **kwargs: Any) -> str:
+    def fill_out_form(self, form_input: Optional[str] = None, **kwargs: Any) -> str:
         """fill out form by form field name and input name"""
         filled_element = None
-        if kwargs.get("form_input") and type(kwargs.get("form_input")) == str:
+        if form_input and type(form_input) == str:
             # Clean up form input
             form_input_str = truncate_string_from_last_occurrence(
-                string=kwargs.get("form_input"), character="}"  # type: ignore
+                string=form_input, character="}"  # type: ignore
             )
             try:
                 form_input = json.loads(form_input_str)
@@ -250,10 +253,8 @@ class SeleniumWrapper:
                     " again. Make sure to use double quotes for strings. Example input:"
                     ' {"email": "foo@bar.com","name": "foo bar"}'
                 )
-        elif kwargs.get("form_input"):
-            form_input = kwargs.get("form_input")
-        else:
-            form_input = kwargs
+        elif not form_input:
+            form_input = kwargs  # type: ignore
         try:
             for element in self.driver.find_elements(
                 By.TAG_NAME, "textarea"
@@ -277,6 +278,11 @@ class SeleniumWrapper:
                                 time.sleep(
                                     0.5
                                 )  # Allow some time for the page to settle
+                                try:
+                                    # Try clearing the input field
+                                    element.clear()
+                                except WebDriverException:
+                                    pass
                                 element.send_keys(form_input[key])  # type: ignore
                                 filled_element = element
                                 break

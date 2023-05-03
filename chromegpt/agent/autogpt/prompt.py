@@ -119,9 +119,10 @@ class AutoGPTPrompt(BaseChatPromptTemplate, BaseModel):
             memory_messages = self._format_memory_messages(tokens_left // 2, **kwargs)
             messages += memory_messages
             used_tokens += self._calculate_tokens(memory_messages)
-            token_limit = self.send_token_limit - used_tokens
-            prev_actions = self._format_prev_actions(token_limit, **kwargs)
-            messages += prev_actions
+            # HACK: This is a hack since GPT-3 doesn't seem to like previous actions
+            # token_limit = self.send_token_limit - used_tokens
+            # prev_actions = self._format_prev_actions(token_limit, **kwargs)
+            # messages += prev_actions
         messages += last_action
         messages.append(input_message)
         return messages
