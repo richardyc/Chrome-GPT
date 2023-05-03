@@ -9,11 +9,14 @@ def run_chromegpt(
     agent: str = "zero-shot",
     headless: bool = False,
     verbose: bool = False,
+    continuous: bool = True,
 ) -> str:
     """Run ChromeGPT."""
     # setup agent
     if agent == "auto-gpt":
-        agent_obj: ChromeGPTAgent = AutoGPTAgent(model=model, verbose=verbose)
+        agent_obj: ChromeGPTAgent = AutoGPTAgent(
+            model=model, verbose=verbose, continuous=continuous
+        )
     elif agent == "baby-agi":
         agent_obj = BabyAGIAgent(model=model, verbose=verbose)
     elif agent == "zero-shot":

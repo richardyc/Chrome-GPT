@@ -17,11 +17,14 @@ from chromegpt.agent.utils import get_agent_tools, get_vectorstore
 class AutoGPTAgent(ChromeGPTAgent):
     """AutoGPT agent for ChromeGPT. Note that this agent is optimized for GPT-4 use."""
 
-    def __init__(self, model: str = "gpt-4", verbose: bool = False) -> None:
+    def __init__(
+        self, model: str = "gpt-4", verbose: bool = False, continuous: bool = True
+    ) -> None:
         """Initialize the ZeroShotAgent."""
         self.agent = self._get_autogpt_agent(
             llm=ChatOpenAI(model_name=model, temperature=0),  # type: ignore
             verbose=verbose,
+            human_in_the_loop=not continuous,
         )
         self.model = model
 
