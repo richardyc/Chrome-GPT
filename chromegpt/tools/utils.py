@@ -6,6 +6,7 @@ from typing import List, Optional
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from unidecode import unidecode
 
 
 ### Main Content Extraction ###
@@ -55,6 +56,7 @@ def prettify_text(text: str, limit: Optional[int] = None) -> str:
     """Prettify text by removing extra whitespace and converting to lowercase."""
     text = re.sub(r"\s+", " ", text)
     text = text.strip().lower()
+    text = unidecode(text)
     if limit:
         text = text[:limit]
     return text

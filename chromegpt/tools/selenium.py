@@ -165,13 +165,14 @@ class SeleniumWrapper:
             selected_element = None
             for element in elements:
                 text = prettify_text(element.text)
+                button_text = prettify_text(button_text)
                 if (
                     element.is_displayed()
                     and element.is_enabled()
                     and (
-                        text.lower() == button_text.lower()
+                        text == button_text
                         or (
-                            button_text.lower() in text.lower()
+                            button_text in text
                             and abs(len(button_text) - len(text)) < 50
                         )
                     )

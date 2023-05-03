@@ -10,7 +10,7 @@ lint lint_diff:
 
 format:
 	poetry run black . --preview
-	poetry run ruff --select I --fix .
+	poetry run ruff . --fix
 
 tests:
 	poetry run pytest tests
