@@ -68,7 +68,7 @@ class SeleniumWrapper:
         results = self._get_google_search_results()
         return (
             "Which url would you like to goto? Provide the full url starting with http"
-            " or https: "
+            " or https to goto: "
             + json.dumps(results)
         )
 
@@ -76,7 +76,7 @@ class SeleniumWrapper:
         # Scrape search results
         results = []
         search_results = self.driver.find_elements(By.CSS_SELECTOR, "#search .g")
-        for index, result in enumerate(search_results, start=1):
+        for _, result in enumerate(search_results, start=1):
             try:
                 title_element = result.find_element(By.CSS_SELECTOR, "h3")
                 link_element = result.find_element(By.CSS_SELECTOR, "a")
@@ -87,7 +87,6 @@ class SeleniumWrapper:
                     results.append(
                         {
                             "title": title,
-                            "position": index,
                             "link": link,
                         }
                     )
@@ -173,7 +172,7 @@ class SeleniumWrapper:
                         text == button_text
                         or (
                             button_text in text
-                            and abs(len(button_text) - len(text)) < 50
+                            and abs(len(text) - len(button_text)) < 50
                         )
                     )
                 ):
