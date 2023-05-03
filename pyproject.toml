@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
-langchain = "0.0.151"
+langchain = "0.0.152"
 selenium = "^4.9.0"
 pytest = "^7.3.1"
 mypy = "^1.2.0"
