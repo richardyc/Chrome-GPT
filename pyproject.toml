@@ -21,6 +21,7 @@ tiktoken = "^0.3.3"
 validators = "^0.20.0"
 pexpect = "^4.8.0"
 unidecode = "1.3.6"
+bs4 = "^0.0.1"
 
 [tool.ruff]
 select = [

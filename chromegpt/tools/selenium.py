@@ -17,6 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 from chromegpt.tools.utils import (
+    find_parent_element_text,
     get_all_text_elements,
     prettify_text,
     truncate_string_from_last_occurrence,
@@ -81,7 +82,7 @@ class SeleniumWrapper:
                 title_element = result.find_element(By.CSS_SELECTOR, "h3")
                 link_element = result.find_element(By.CSS_SELECTOR, "a")
 
-                title = title_element.text
+                title = prettify_text(title_element.text)
                 link = link_element.get_attribute("href")
                 if title and link:
                     results.append(
@@ -151,10 +152,15 @@ class SeleniumWrapper:
                 # No text surrounded by double quotes
                 pass
         try:
-            buttons = self.driver.find_elements(By.XPATH, "//button")
+            buttons = self.driver.find_elements(
+                By.XPATH, "//button"
+            ) + self.driver.find_elements(By.XPATH, "//div[@role='button']")
             links = self.driver.find_elements(By.XPATH, "//a")
+            checkboxes = self.driver.find_elements(
+                By.XPATH, "//input[@type='checkbox']"
+            )
 
-            elements = buttons + links
+            elements = buttons + links + checkboxes
 
             if not elements:
                 return (
@@ -162,8 +168,9 @@ class SeleniumWrapper:
                 )
 
             selected_element = None
+            all_buttons = []
             for element in elements:
-                text = prettify_text(element.text)
+                text = find_parent_element_text(element)
                 button_text = prettify_text(button_text)
                 if (
                     element.is_displayed()
@@ -177,17 +184,20 @@ class SeleniumWrapper:
                     )
                 ):
                     selected_element = element
+                    if text and text not in all_buttons:
+                        all_buttons.append(text)
                     break
             if not selected_element:
                 return (
                     f"No interactable element found with text: {button_text}. Double"
-                    " check the button text and try again."
+                    " check the button text and try again. Available buttons:"
+                    f" {json.dumps(all_buttons)}"
                 )
 
             # Scroll the element into view and Click the element using JavaScript
             before_content = self.describe_website()
             actions = ActionChains(self.driver)
-            actions.move_to_element(element).click().perform()
+            actions.move_to_element(selected_element).click().perform()
             after_content = self.describe_website()
             if before_content == after_content:
                 output = (
@@ -227,6 +237,7 @@ class SeleniumWrapper:
                 element.get_attribute("name")
                 or element.get_attribute("aria-label")
                 or element.find_element(By.XPATH, "..").text
+                or find_parent_element_text(element)
             )
             if (
                 label_txt
@@ -234,6 +245,7 @@ class SeleniumWrapper:
                 and len(label_txt) < 100
                 and label_txt not in fields
             ):
+                label_txt = prettify_text(label_txt)
                 fields.append(label_txt)
         return str(fields)
 
@@ -262,9 +274,10 @@ class SeleniumWrapper:
                 label_txt = (
                     element.get_attribute("name")
                     or element.get_attribute("aria-label")
-                    or element.find_element(By.XPATH, "..").text
+                    or find_parent_element_text(element)
                 )
                 if label_txt:
+                    label_txt = prettify_text(label_txt)
                     for key in form_input.keys():  # type: ignore
                         if key.lower() == label_txt.lower() or (
                             key.lower() in label_txt.lower()
@@ -280,6 +293,8 @@ class SeleniumWrapper:
                                 )  # Allow some time for the page to settle
                                 try:
                                     # Try clearing the input field
+                                    element.send_keys(Keys.CONTROL + "a")
+                                    element.send_keys(Keys.DELETE)
                                     element.clear()
                                 except WebDriverException:
                                     pass
@@ -337,14 +352,17 @@ class SeleniumWrapper:
 
     def _get_interactable_elements(self) -> str:
         # Extract interactable components (buttons and links)
-        buttons = self.driver.find_elements(By.XPATH, "//button")
+        buttons = self.driver.find_elements(
+            By.XPATH, "//button"
+        ) + self.driver.find_elements(By.XPATH, "//div[@role='button']")
         links = self.driver.find_elements(By.XPATH, "//a")
+        checkboxes = self.driver.find_elements(By.XPATH, "//input[@type='checkbox']")
 
-        interactable_elements = buttons + links
+        interactable_elements = buttons + links + checkboxes
 
         interactable_texts = []
         for element in interactable_elements:
-            button_text = element.text.strip()
+            button_text = find_parent_element_text(element)
             button_text = prettify_text(button_text, 50)
             if (
                 button_text

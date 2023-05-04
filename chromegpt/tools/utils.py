@@ -86,6 +86,18 @@ def element_completely_viewable(driver: WebDriver, elem: WebElement) -> bool:
     )
 
 
+def find_parent_element_text(elem: WebElement, prettify: bool = True) -> str:
+    """Find the text up to third order parent element."""
+    parent_element = elem
+    parent_element_text = elem.text.strip()
+    max_step = 3
+    while not parent_element_text and max_step > 0:
+        parent_element = parent_element.find_element(By.XPATH, "..")
+        parent_element_text = parent_element.text.strip()
+        max_step -= 1
+    return parent_element_text if not prettify else prettify_text(parent_element_text)
+
+
 def truncate_string_from_last_occurrence(string: str, character: str) -> str:
     """Truncate a string from the last occurrence of a character."""
     last_occurrence_index = string.rfind(character)
