@@ -152,15 +152,10 @@ class SeleniumWrapper:
                 # No text surrounded by double quotes
                 pass
         try:
-            buttons = self.driver.find_elements(
-                By.XPATH, "//button"
-            ) + self.driver.find_elements(By.XPATH, "//div[@role='button']")
-            links = self.driver.find_elements(By.XPATH, "//a")
-            checkboxes = self.driver.find_elements(
-                By.XPATH, "//input[@type='checkbox']"
+            elements = self.driver.find_elements(
+                By.XPATH,
+                "//button | //div[@role='button'] | //a | //input[@type='checkbox']",
             )
-
-            elements = buttons + links + checkboxes
 
             if not elements:
                 return (
@@ -230,13 +225,10 @@ class SeleniumWrapper:
             except WebDriverException as e:
                 return f"Error loading url {url}, message: {e.msg}"
         fields = []
-        for element in self.driver.find_elements(
-            By.TAG_NAME, "textarea"
-        ) + self.driver.find_elements(By.TAG_NAME, "input"):
+        for element in self.driver.find_elements(By.XPATH, "//textarea | //input"):
             label_txt = (
                 element.get_attribute("name")
                 or element.get_attribute("aria-label")
-                or element.find_element(By.XPATH, "..").text
                 or find_parent_element_text(element)
             )
             if (
@@ -268,9 +260,7 @@ class SeleniumWrapper:
         elif not form_input:
             form_input = kwargs  # type: ignore
         try:
-            for element in self.driver.find_elements(
-                By.TAG_NAME, "textarea"
-            ) + self.driver.find_elements(By.TAG_NAME, "input"):
+            for element in self.driver.find_elements(By.XPATH, "//textarea | //input"):
                 label_txt = (
                     element.get_attribute("name")
                     or element.get_attribute("aria-label")
@@ -279,30 +269,22 @@ class SeleniumWrapper:
                 if label_txt:
                     label_txt = prettify_text(label_txt)
                     for key in form_input.keys():  # type: ignore
-                        if key.lower() == label_txt.lower() or (
-                            key.lower() in label_txt.lower()
-                            and len(label_txt) - len(key) < 10
-                        ):
+                        if prettify_text(key) == label_txt:
+                            # Scroll the element into view
+                            self.driver.execute_script(
+                                "arguments[0].scrollIntoView();", element
+                            )
+                            time.sleep(0.5)  # Allow some time for the page to settle
                             try:
-                                # Scroll the element into view
-                                self.driver.execute_script(
-                                    "arguments[0].scrollIntoView();", element
-                                )
-                                time.sleep(
-                                    0.5
-                                )  # Allow some time for the page to settle
-                                try:
-                                    # Try clearing the input field
-                                    element.send_keys(Keys.CONTROL + "a")
-                                    element.send_keys(Keys.DELETE)
-                                    element.clear()
-                                except WebDriverException:
-                                    pass
-                                element.send_keys(form_input[key])  # type: ignore
-                                filled_element = element
-                                break
+                                # Try clearing the input field
+                                element.send_keys(Keys.CONTROL + "a")
+                                element.send_keys(Keys.DELETE)
+                                element.clear()
                             except WebDriverException:
-                                continue
+                                pass
+                            element.send_keys(form_input[key])  # type: ignore
+                            filled_element = element
+                            break
             if not filled_element:
                 return (
                     f"Cannot find form with input: {form_input.keys()}."  # type: ignore
@@ -352,13 +334,10 @@ class SeleniumWrapper:
 
     def _get_interactable_elements(self) -> str:
         # Extract interactable components (buttons and links)
-        buttons = self.driver.find_elements(
-            By.XPATH, "//button"
-        ) + self.driver.find_elements(By.XPATH, "//div[@role='button']")
-        links = self.driver.find_elements(By.XPATH, "//a")
-        checkboxes = self.driver.find_elements(By.XPATH, "//input[@type='checkbox']")
-
-        interactable_elements = buttons + links + checkboxes
+        interactable_elements = self.driver.find_elements(
+            By.XPATH,
+            "//button | //div[@role='button'] | //a | //input[@type='checkbox']",
+        )
 
         interactable_texts = []
         for element in interactable_elements:
