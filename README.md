@@ -1,8 +1,8 @@
-# 🤖 Chrome-GPT: An AutoGPT agent that interacts with Chrome
+# 🤖 Chrome-GPT: An experimental AutoGPT agent that interacts with Chrome
  
 [![lint](https://github.com/richardyc/chrome-gpt/actions/workflows/lint.yml/badge.svg)](https://github.com/richardyc/chrome-gpt/actions/workflows/lint.yml) [![test](https://github.com/richardyc/chrome-gpt/actions/workflows/tests.yml/badge.svg)](https://github.com/richardyc/chrome-gpt/actions/workflows/tests.yml) [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/RealRichomie.svg?style=social&label=Follow%20%40RealRichomie)](https://twitter.com/RealRichomie)
 
-Chrome-GPT is a powerful AutoGPT agent that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable control of an entire Chrome session. With the ability to interactively scroll, click, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
+Chrome-GPT is an AutoGPT experiment that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable an AutoGPT agent take control of an entire Chrome session. With the ability to interactively scroll, click, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
 
 <h2 align="center"> 🖥️ Demo </h2>
 
@@ -19,6 +19,13 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 - 🔨 Chrome actions: describe a webpage, scroll to element, click on buttons/links, input forms, switch tabs
 - 🤖 Supports multiple agent types: Zero-shot, BabyAGI and Auto-GPT
 - 🔥 (IN PROGRESS) Chrome plugin support
+
+<h2 align="center"> 🧱 Known Limitations </h2>
+
+- There are limited web crawling features, with buttons and input fields sometimes failing to appear in prompt.
+- The response time is slow, with each action taking between 1-10 seconds to run.
+- At times, langchain agents are unable to parse GPT outputs (refer to langchain discussion: https://github.com/hwchase17/langchain/discussions/4065).
+
 
 <h2 align="center"> Requirements </h2>
 
