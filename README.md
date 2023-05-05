@@ -2,6 +2,8 @@
  
 [![lint](https://github.com/richardyc/chrome-gpt/actions/workflows/lint.yml/badge.svg)](https://github.com/richardyc/chrome-gpt/actions/workflows/lint.yml) [![test](https://github.com/richardyc/chrome-gpt/actions/workflows/tests.yml/badge.svg)](https://github.com/richardyc/chrome-gpt/actions/workflows/tests.yml) [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/RealRichomie.svg?style=social&label=Follow%20%40RealRichomie)](https://twitter.com/RealRichomie)
 
+⚠️This is an experimental AutoGPT agent that might take incorrect actions and could lead to serious consequences. Please use it at your own discretion⚠️
+
 Chrome-GPT is an AutoGPT experiment that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable an AutoGPT agent take control of an entire Chrome session. With the ability to interactively scroll, click, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
 
 <h2 align="center"> 🖥️ Demo </h2>
