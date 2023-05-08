@@ -16,6 +16,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+from webdriver_manager.chrome import ChromeDriverManager
+
 from chromegpt.tools.utils import (
     find_parent_element_text,
     get_all_text_elements,
@@ -43,7 +45,7 @@ class SeleniumWrapper:
             chrome_options.add_argument("--headless")
         else:
             chrome_options.add_argument("--start-maximized")
-        self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         self.driver.implicitly_wait(5)  # Wait 5 seconds for elements to load
 
     def __del__(self) -> None:
