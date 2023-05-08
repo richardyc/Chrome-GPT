@@ -63,3 +63,8 @@ Options:
                                   when using auto-gpt agent
   --help                          Show this message and exit.
 ```
+
+<h2 align="center"> ⭐ Star History </h2>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=richardyc/Chrome-GPT&type=Date)](https://star-history.com/#richardyc/Chrome-GPT&Date)
+
