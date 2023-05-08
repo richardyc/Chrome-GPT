@@ -45,7 +45,7 @@ class SeleniumWrapper:
             chrome_options.add_argument("--headless")
         else:
             chrome_options.add_argument("--start-maximized")
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         self.driver.implicitly_wait(5)  # Wait 5 seconds for elements to load
 
     def __del__(self) -> None:
