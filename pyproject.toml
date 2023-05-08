@@ -22,7 +22,7 @@ validators = "^0.20.0"
 pexpect = "^4.8.0"
 unidecode = "1.3.6"
 bs4 = "^0.0.1"
-webdriver-manager = 3.8.6
+webdriver-manager = "3.8.6"
 
 [tool.ruff]
 select = [
