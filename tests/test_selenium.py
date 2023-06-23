@@ -9,6 +9,7 @@ from chromegpt.tools.selenium import SeleniumWrapper
 def client() -> SeleniumWrapper:
     return SeleniumWrapper(headless=True)
 
+
 def test_describe_website(client: SeleniumWrapper) -> None:
     """Test that SeleniumWrapper returns correct website"""
 
