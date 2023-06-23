@@ -81,7 +81,7 @@ class SeleniumWrapper:
         soup = BeautifulSoup(page_source, "html.parser")
         search_results = soup.find_all('div',class_='g')
         for _, result in enumerate(search_results, start=1):
-            if result.find("a") and result.find("h3"):
+            try:
                 title_element = result.find('h3')
                 link_element = result.find("a")
 
@@ -94,6 +94,8 @@ class SeleniumWrapper:
                             "link": link,
                         }
                     )
+            except Exception:
+                continue
         return results
 
     def describe_website(self, url: Optional[str] = None) -> str:
