@@ -94,7 +94,6 @@ class SeleniumWrapper:
                             "link": link,
                         }
                     )
-
         return results
 
     def describe_website(self, url: Optional[str] = None) -> str:
