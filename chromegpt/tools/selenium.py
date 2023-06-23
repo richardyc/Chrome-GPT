@@ -6,6 +6,7 @@ import urllib.parse
 from typing import Any, Dict, List, Optional
 
 import validators
+from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -76,14 +77,16 @@ class SeleniumWrapper:
     def _get_google_search_results(self) -> List[Dict[str, Any]]:
         # Scrape search results
         results = []
-        search_results = self.driver.find_elements(By.CSS_SELECTOR, "#search .g")
+        page_source = self.driver.page_source
+        soup = BeautifulSoup(page_source, "html.parser")
+        search_results = soup.find_all("div", class_="g")
         for _, result in enumerate(search_results, start=1):
-            try:
-                title_element = result.find_element(By.CSS_SELECTOR, "h3")
-                link_element = result.find_element(By.CSS_SELECTOR, "a")
+            if result.find("a") and result.find("h3"):
+                title_element = result.find("h3")
+                link_element = result.find("a")
 
-                title = prettify_text(title_element.text)
-                link = link_element.get_attribute("href")
+                title = title_element.get_text()
+                link = link_element.get("href")
                 if title and link:
                     results.append(
                         {
@@ -91,8 +94,6 @@ class SeleniumWrapper:
                             "link": link,
                         }
                     )
-            except Exception:
-                continue
         return results
 
     def describe_website(self, url: Optional[str] = None) -> str:
