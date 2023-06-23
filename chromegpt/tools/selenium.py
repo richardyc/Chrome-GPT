@@ -6,6 +6,7 @@ import urllib.parse
 from typing import Any, Dict, List, Optional
 
 import validators
+from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 from selenium import webdriver
 from selenium.common.exceptions import (
