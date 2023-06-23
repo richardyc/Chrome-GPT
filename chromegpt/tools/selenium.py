@@ -79,10 +79,10 @@ class SeleniumWrapper:
         results = []
         page_source = self.driver.page_source
         soup = BeautifulSoup(page_source, "html.parser")
-        search_results = soup.find_all('div',class_='g')
+        search_results = soup.find_all("div", class_="g")
         for _, result in enumerate(search_results, start=1):
             if result.find("a") and result.find("h3"):
-                title_element = result.find('h3')
+                title_element = result.find("h3")
                 link_element = result.find("a")
 
                 title = title_element.get_text()
@@ -94,7 +94,7 @@ class SeleniumWrapper:
                             "link": link,
                         }
                     )
-            
+
         return results
 
     def describe_website(self, url: Optional[str] = None) -> str:
