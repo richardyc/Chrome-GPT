@@ -93,15 +93,20 @@ def find_parent_element_text(elem: WebElement, prettify: bool = True) -> str:
         return (
             parent_element_text if not prettify else prettify_text(parent_element_text)
         )
-    elements = elem.find_elements(By.XPATH, "./ancestor::*[position() <= 3]")
-    for parent_element in elements:
-        parent_element_text = parent_element.text.strip()
-        if parent_element_text:
-            return (
-                parent_element_text
-                if not prettify
-                else prettify_text(parent_element_text)
-            )
+    try: # Sometimes elem has no ancestor
+        elements = elem.find_elements(By.XPATH, "./ancestor::*[position() <= 3]")
+        for parent_element in elements:
+            if parent_element.tag_name.lower() == "s":
+                continue
+            parent_element_text = parent_element.text.strip()
+            if parent_element_text:
+                return (
+                    parent_element_text
+                    if not prettify
+                    else prettify_text(parent_element_text)
+                )
+    except Exception:
+        pass
     return ""
 
 
