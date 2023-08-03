@@ -354,7 +354,7 @@ class SeleniumWrapper:
                 continue
             if "style" in element.attrs and "display: none" in element["style"]:
                 continue
-    
+
             button_text = (
                 element.get("name")
                 or element.get("aria-label")
