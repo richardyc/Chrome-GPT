@@ -46,6 +46,7 @@ def test_google_search(client: SeleniumWrapper) -> None:
     assert "hello" in res
     assert "Which url would you like to goto" in res
 
+
 def test_iframe(client: SeleniumWrapper) -> None:
     """Test iframe_mapping functionality"""
     
