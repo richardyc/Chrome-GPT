@@ -49,7 +49,7 @@ def test_google_search(client: SeleniumWrapper) -> None:
 
 def test_iframe(client: SeleniumWrapper) -> None:
     """Test iframe_mapping functionality"""
-    
+
     res = client.describe_website("https://www.chatbase.co/.")
     assert "switch to these child iframes" in res
     assert "iframe-0" in res
