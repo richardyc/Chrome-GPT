@@ -349,15 +349,27 @@ class SeleniumWrapper:
 
         interactable_texts = []
         for element in interactable_elements:
-            button_text = find_parent_element_text(element)
-            button_text = prettify_text(button_text, 50)
+            # Detect if size is visible
+            if element.get("style") and "display: none" in element.get("style"):
+                continue
             if (
-                button_text
-                and button_text not in interactable_texts
-                and element.is_displayed()
-                and element.is_enabled()
+                "style" in element.attrs
+                and "display: none" in element["style"]
             ):
-                interactable_texts.append(button_text)
+                continue
+    
+            button_text = (
+                element.get("name")
+                or element.get("aria-label")
+                or element.get("value")
+                or element.get("id")
+                or find_parent_element_text(element)
+            )
+
+            if button_text:
+                button_text = prettify_text(button_text, limit=50, remove_special_char=True)
+                if button_text not in interactable_texts:
+                    interactable_texts.append(button_text)
 
         # Split up the links and the buttons
         buttons_text = []
