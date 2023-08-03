@@ -317,7 +317,7 @@ class SeleniumWrapper:
 
     def _get_website_main_content(self, soup: BeautifulSoup) -> str:
         texts = [
-            element.get_text(separator=' ') for element in soup.find_all(string=True)
+            element.get_text(separator=" ") for element in soup.find_all(string=True)
         ]
         pretty_texts = [prettify_text(text) for text in texts]
         if not pretty_texts:
@@ -339,8 +339,8 @@ class SeleniumWrapper:
                 or (tag.name == "div" and tag.get("role") == "button")
                 or tag.name == "a"
                 or (
-                    tag.name == "input" 
-                    and tag.get("type") 
+                    tag.name == "input"
+                    and tag.get("type")
                     in ["checkbox", "submit", "button", "radio", "reset"]
                 )
                 or tag.has_attr("data-href")
@@ -352,10 +352,7 @@ class SeleniumWrapper:
             # Detect if size is visible
             if element.get("style") and "display: none" in element.get("style"):
                 continue
-            if (
-                "style" in element.attrs
-                and "display: none" in element["style"]
-            ):
+            if "style" in element.attrs and "display: none" in element["style"]:
                 continue
     
             button_text = (
@@ -367,7 +364,9 @@ class SeleniumWrapper:
             )
 
             if button_text:
-                button_text = prettify_text(button_text, limit=50, remove_special_char=True)
+                button_text = prettify_text(
+                    button_text, limit=50, remove_special_char=True
+                )
                 if button_text not in interactable_texts:
                     interactable_texts.append(button_text)
 
