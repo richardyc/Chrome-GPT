@@ -19,7 +19,6 @@ from selenium.webdriver.common.keys import Keys
 
 from chromegpt.tools.utils import (
     find_parent_element_text,
-    get_all_text_elements,
     prettify_text,
     truncate_string_from_last_occurrence,
 )
@@ -317,7 +316,9 @@ class SeleniumWrapper:
         return self.describe_website()
 
     def _get_website_main_content(self, soup: BeautifulSoup) -> str:
-        texts = [element.get_text(separator=' ') for element in soup.find_all(string=True)]
+        texts = [
+            element.get_text(separator=' ') for element in soup.find_all(string=True)
+        ]
         pretty_texts = [prettify_text(text) for text in texts]
         if not pretty_texts:
             return ""
@@ -337,7 +338,11 @@ class SeleniumWrapper:
                 tag.name == "button"
                 or (tag.name == "div" and tag.get("role") == "button")
                 or tag.name == "a"
-                or (tag.name == "input" and tag.get("type") in ["checkbox", "submit", "button", "radio", "reset"])
+                or (
+                    tag.name == "input" 
+                    and tag.get("type") 
+                    in ["checkbox", "submit", "button", "radio", "reset"]
+                )
                 or tag.has_attr("data-href")
             )
         )
