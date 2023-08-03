@@ -113,20 +113,17 @@ class SeleniumWrapper:
         time.sleep(1)  # Wait for website to load
 
         try:
-            # Extract main content
-            main_content = self._get_website_main_content()
+            # Extract main content, interactable components and form inputs
+            soup = BeautifulSoup(self.driver.page_source, "html.parser")
+            main_content = self._get_website_main_content(soup)
+            interactable_content = self._get_interactable_elements(soup)
+            form_fields = self._find_form_fields()
         except WebDriverException:
             return "Website still loading, please wait a few seconds and try again."
         if main_content:
             output += f"{main_content}\n"
-
-        # Extract interactable components (buttons and links)
-        interactable_content = self._get_interactable_elements()
         if interactable_content:
             output += f"{interactable_content}\n"
-
-        # Extract form inputs
-        form_fields = self._find_form_fields()
         if form_fields:
             output += (
                 "You can input text in these fields using fill_form function: "
@@ -319,8 +316,8 @@ class SeleniumWrapper:
 
         return self.describe_website()
 
-    def _get_website_main_content(self) -> str:
-        texts = get_all_text_elements(self.driver)
+    def _get_website_main_content(self, soup: BeautifulSoup) -> str:
+        texts = [element.get_text(separator=' ') for element in soup.find_all(string=True)]
         pretty_texts = [prettify_text(text) for text in texts]
         if not pretty_texts:
             return ""
@@ -333,11 +330,16 @@ class SeleniumWrapper:
 
         return description
 
-    def _get_interactable_elements(self) -> str:
+    def _get_interactable_elements(self, soup: BeautifulSoup) -> str:
         # Extract interactable components (buttons and links)
-        interactable_elements = self.driver.find_elements(
-            By.XPATH,
-            "//button | //div[@role='button'] | //a | //input[@type='checkbox']",
+        interactable_elements = soup.find_all(
+            lambda tag: (
+                tag.name == "button"
+                or (tag.name == "div" and tag.get("role") == "button")
+                or tag.name == "a"
+                or (tag.name == "input" and tag.get("type") in ["checkbox", "submit", "button", "radio", "reset"])
+                or tag.has_attr("data-href")
+            )
         )
 
         interactable_texts = []
