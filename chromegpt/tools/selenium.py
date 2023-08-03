@@ -364,9 +364,7 @@ class SeleniumWrapper:
             )
 
             if button_text:
-                button_text = prettify_text(
-                    button_text, limit=50, remove_special_char=True
-                )
+                button_text = prettify_text(button_text, limit=50)
                 if button_text not in interactable_texts:
                     interactable_texts.append(button_text)
 
