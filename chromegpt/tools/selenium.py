@@ -37,16 +37,18 @@ class SeleniumWrapper:
             selenium = SeleniumWrapper()
     """
 
-    def __init__(self, headless: bool = False, docker:bool = True) -> None:
+    def __init__(self, headless: bool = False, docker: bool = True) -> None:
         """Initialize Selenium and start interactive session."""
         chrome_options = Options()
-        
+
         if headless:
             chrome_options.add_argument("--headless")
         else:
             chrome_options.add_argument("--start-maximized")
         if docker:
-            self.driver = webdriver.Remote("http://host.docker.internal:4444/wd/hub",options=chrome_options)
+            self.driver = webdriver.Remote(
+                "http://host.docker.internal:4444/wd/hub", options=chrome_options
+            )
         else:
             self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.implicitly_wait(5)  # Wait 5 seconds for elements to load
@@ -74,8 +76,7 @@ class SeleniumWrapper:
         results = self._get_google_search_results()
         return (
             "Which url would you like to goto? Provide the full url starting with http"
-            " or https to goto: "
-            + json.dumps(results)
+            " or https to goto: " + json.dumps(results)
         )
 
     def _get_google_search_results(self) -> List[Dict[str, Any]]:
