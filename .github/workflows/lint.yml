@@ -5,9 +5,6 @@ on:
     branches: [main]
   pull_request:
 
-env:
-  POETRY_VERSION: "1.4.2"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,18 +13,17 @@ jobs:
         python-version:
           - "3.10"
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Free disk space
         run: |
-          pipx install poetry==$POETRY_VERSION
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: poetry
-      - name: Install dependencies
-        run: |
-          poetry install
-      - name: Analysing the code with our lint
-        run: |
-          make lint
+          df --human-readable
+          sudo apt clean
+          docker 2>/dev/null 1>&2 rmi $(docker image ls --all --quiet) || true
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          df --human-readable
+      - name: Build with Docker
+        run: docker build -t chromegpt --target test --build-arg MAKE=lint .
+      - name: Test with pytest
+        run: docker run --rm --name test-run chromegpt:test
+

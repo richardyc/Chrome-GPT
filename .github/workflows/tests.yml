@@ -12,16 +12,17 @@ jobs:
       matrix:
         python-version:
           - "3.10"
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Free disk space
-      run: |
-        df --human-readable
-        sudo apt clean
-        docker 2>/dev/null 1>&2 rmi $(docker image ls --all --quiet) || true
-        rm --recursive --force "$AGENT_TOOLSDIRECTORY"
-        df --human-readable
-    - name: Build with Docker
-      run: docker build -t chromegpt:test --target test  .
-    - name: Test with pytest
-      run: docker run --rm --name test-run chromegpt:test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Free disk space
+        run: |
+          df --human-readable
+          sudo apt clean
+          docker 2>/dev/null 1>&2 rmi $(docker image ls --all --quiet) || true
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          df --human-readable
+      - name: Build with Docker
+        run: docker build -t chromegpt --target test --build-arg MAKE=test .
+      - name: Test with pytest
+        run: docker run --rm --name test-run chromegpt:test
