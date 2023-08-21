@@ -25,4 +25,5 @@ RUN pyenv global $PY_VERSION
 
 # setup code
 COPY . .
-RUN pip install -r requirements.txt
+RUN pip install poetry==1.4.2
+RUN poetry install
