@@ -1,0 +1,16 @@
+version: '3'
+services:
+  chromegpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+      args:
+        - MAKE=tests
+
+  selenium-chrome:
+    image: selenium/standalone-chrome:latest
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+    shm_size: "2g"
