@@ -1,0 +1,20 @@
+{
+    "build": { 
+      "dockerfile": "../Dockerfile",
+      "target":"test",
+      "args": {
+        "PY_VERSION":"3.11.0"
+        }
+      },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-python.python",
+          "ms-python.vscode-pylance",
+          "ms-toolsai.jupyter"
+        ]
+      }
+    },
+  
+    "forwardPorts": [3000]
+  }
