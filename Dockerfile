@@ -14,5 +14,5 @@ RUN poetry config virtualenvs.create false && \
 # run test
 FROM base as test
 # Set the environment variable
-ENV MAKE="tests"
+ARG MAKE="tests"
 CMD make $MAKE
