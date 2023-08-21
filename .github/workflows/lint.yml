@@ -25,5 +25,4 @@ jobs:
       - name: Build with Docker
         run: docker build -t chromegpt --target test --build-arg MAKE=lint .
       - name: Test with pytest
-        run: docker run --rm --name test-run chromegpt:test
-
+        run: docker run --rm --name test-run chromegpt

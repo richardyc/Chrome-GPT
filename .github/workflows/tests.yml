@@ -23,6 +23,6 @@ jobs:
           rm --recursive --force "$AGENT_TOOLSDIRECTORY"
           df --human-readable
       - name: Build with Docker
-        run: docker build -t chromegpt --target test --build-arg MAKE=test .
+        run: docker build -t chromegpt --target test --build-arg MAKE=tests .
       - name: Test with pytest
-        run: docker run --rm --name test-run chromegpt:test
+        run: docker run --rm --name test-run chromegpt
