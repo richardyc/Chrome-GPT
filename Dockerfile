@@ -27,3 +27,8 @@ RUN pyenv global $PY_VERSION
 COPY . .
 RUN pip install poetry==1.4.2
 RUN poetry install
+
+
+# run test
+FROM base as test
+RUN make test
