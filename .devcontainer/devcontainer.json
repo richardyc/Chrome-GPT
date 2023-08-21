@@ -1,19 +1,16 @@
 {
-    "build": { 
-      "dockerfile": "../Dockerfile",
-      "args": {
-        "PY_VERSION":"3.11.0"
-        }
-      },
-    "customizations": {
+  "dockerComposeFile": "../docker-compose.yml",
+  "customizations": {
       "vscode": {
-        "extensions": [
-          "ms-python.python",
-          "ms-python.vscode-pylance",
-          "ms-toolsai.jupyter"
-        ]
+          "extensions": [
+              "ms-python.python",
+              "ms-python.vscode-pylance",
+              "ms-toolsai.jupyter"
+          ]
       }
-    },
-  
-    "forwardPorts": [3000]
-  }
+  },
+  "forwardPorts": [3000],
+  "containerEnv": {
+    "TARGET": "base"
+}
+}

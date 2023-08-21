@@ -4,9 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: test
+      target: $TARGET
       args:
-        - MAKE=tests
+        - TARGET=test
+        - MAKE=${MAKE:-tests}  # Default value is "tests" if MAKE is not set
+    environment:
+      - TARGET=${TARGET}
+      - MAKE=${MAKE}
 
   selenium-chrome:
     image: selenium/standalone-chrome:latest
