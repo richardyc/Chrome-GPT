@@ -4,6 +4,7 @@ import re
 from typing import List, Optional
 
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.wendriver import WebDriver as RemoteWebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from unidecode import unidecode
@@ -14,7 +15,7 @@ def is_complete_sentence(text: str) -> bool:
     return re.search(r"[.!?]\s*$", text) is not None
 
 
-def get_all_text_elements(driver: WebDriver) -> List[str]:
+def get_all_text_elements(driver: [WebDriver,RemoteWebDriver]) -> List[str]:
     xpath = (
         "//*[not(self::script or self::style or"
         " self::noscript)][string-length(normalize-space(text())) > 0]"
@@ -30,7 +31,7 @@ def get_all_text_elements(driver: WebDriver) -> List[str]:
     return texts
 
 
-def find_interactable_elements(driver: WebDriver) -> List[str]:
+def find_interactable_elements(driver: [WebDriver,RemoteWebDriver]) -> List[str]:
     """Find all interactable elements on the page."""
     # Extract interactable components (buttons and links)
     buttons = driver.find_elements(By.XPATH, "//button")
@@ -62,7 +63,7 @@ def prettify_text(text: str, limit: Optional[int] = None) -> str:
     return text
 
 
-def element_completely_viewable(driver: WebDriver, elem: WebElement) -> bool:
+def element_completely_viewable(driver: [WebDriver,RemoteWebDriver], elem: WebElement) -> bool:
     """Check if an element is completely viewable in the browser window."""
     elem_left_bound = elem.location.get("x")
     elem_top_bound = elem.location.get("y")
