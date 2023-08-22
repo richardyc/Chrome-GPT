@@ -1,7 +1,7 @@
 {
-  "dockerComposeFile": "../docker-compose.yml",
-  "service":"chromegpt",
-  "workspaceFolder":"${workspaceFolder}",
+  "dockerComposeFile": "../docker-compose.yaml",
+  "service": "chromegpt",
+  "workspaceFolder":"/app",
   "customizations": {
       "vscode": {
           "extensions": [
@@ -14,5 +14,5 @@
   "forwardPorts": [3000],
   "containerEnv": {
     "TARGET": "base"
-}
+  }
 }
