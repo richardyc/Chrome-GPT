@@ -55,7 +55,9 @@ class SeleniumWrapper:
 
     def __del__(self) -> None:
         """Close Selenium session."""
-        self.driver.close()
+        if hasattr(self,"driver") and self.driver != None:
+            self.driver.close()
+            self.driver.quit()
 
     def previous_webpage(self) -> str:
         """Go back in browser history."""
