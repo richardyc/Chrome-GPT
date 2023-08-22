@@ -4,13 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: $TARGET
+      target: ${TARGET:-test}
       args:
-        - TARGET=test
+        - TARGET=${TARGET:-test}
         - MAKE=${MAKE:-tests}  # Default value is "tests" if MAKE is not set
     environment:
-      - TARGET=${TARGET}
-      - MAKE=${MAKE}
+      - TARGET=${TARGET:-test}
+      - MAKE=${MAKE:-tests} 
 
   selenium-chrome:
     image: selenium/standalone-chrome:latest
@@ -18,3 +18,5 @@ services:
       - "4444:4444"
       - "7900:7900"
     shm_size: "2g"
+    depends_on: 
+      - chromegpt
