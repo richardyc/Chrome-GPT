@@ -11,7 +11,7 @@
           ]
       }
   },
-  "forwardPorts": [3000],
+  "forwardPorts": [3000,4444,7900],
   "containerEnv": {
     "TARGET": "base"
   }
