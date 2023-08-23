@@ -1,5 +1,7 @@
 name: lint
-
+env:
+  TARGET: 'test'
+  MAKE: 'tests'
 on:
   push:
     branches: [main]
@@ -22,7 +24,5 @@ jobs:
           docker 2>/dev/null 1>&2 rmi $(docker image ls --all --quiet) || true
           rm --recursive --force "$AGENT_TOOLSDIRECTORY"
           df --human-readable
-      - name: Build with Docker
-        run: docker build -t chromegpt --target test --build-arg MAKE=lint .
       - name: Test with pytest
-        run: docker run --rm --name test-run chromegpt
+        run: docker-compose up --abort-on-container-exit
