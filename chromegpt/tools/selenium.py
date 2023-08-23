@@ -40,14 +40,13 @@ class SeleniumWrapper:
     def __init__(self, headless: bool = False, docker: bool = True) -> None:
         """Initialize Selenium and start interactive session."""
         chrome_options = Options()
-
         if headless:
             chrome_options.add_argument("--headless")
         else:
             chrome_options.add_argument("--start-maximized")
         if docker:
             self.driver = webdriver.Remote(
-                "http://host.docker.internal:4444/wd/hub", options=chrome_options
+                "http://selenium-chrome:4444/wd/hub",options=chrome_options,
             )
         else:
             self.driver = webdriver.Chrome(options=chrome_options)
@@ -58,6 +57,7 @@ class SeleniumWrapper:
         if hasattr(self,"driver") and self.driver != None:
             self.driver.close()
             self.driver.quit()
+        
 
     def previous_webpage(self) -> str:
         """Go back in browser history."""
@@ -312,7 +312,7 @@ class SeleniumWrapper:
                     " website did not change after filling out form."
                 )
         except WebDriverException as e:
-            print(e)
+            #print(e)
             return f"Error filling out form with input {form_input}, message: {e.msg}"
 
     def scroll(self, direction: str) -> str:
