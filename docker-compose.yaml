@@ -11,12 +11,23 @@ services:
     environment:
       - TARGET=${TARGET:-test}
       - MAKE=${MAKE:-tests} 
+    depends_on: 
+      selenium-chrome:
+        condition: service_healthy
+
 
   selenium-chrome:
     image: selenium/standalone-chrome:latest
     ports:
       - "4444:4444"
       - "7900:7900"
+      - "5900:5900"
+    environment:
+      - SE_NODE_MAX_SESSIONS=10       
+      - SE_NODE_SESSION_TIMEOUT=30000 
     shm_size: "2g"
-    depends_on: 
-      - chromegpt
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://selenium-chrome:4444/wd/hub/status"]
+      interval: 10s  # Check every 30 seconds
+      timeout: 5s   # Timeout after 10 seconds
+      retries: 3     # Retry 3 times before considering the container unhealthy
