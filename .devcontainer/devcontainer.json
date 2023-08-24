@@ -1,7 +1,7 @@
 {
   "dockerComposeFile": "../docker-compose.yaml",
   "service": "chromegpt",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/app",
   "customizations": {
       "vscode": {
           "extensions": [
