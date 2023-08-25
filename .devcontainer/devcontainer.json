@@ -1,5 +1,5 @@
 {
-  "dockerComposeFile": "../docker-compose.yaml",
+  "dockerComposeFile": "./dev.docker-compose.yaml",
   "service": "chromegpt",
   "workspaceFolder": "/app",
   "customizations": {
@@ -12,8 +12,5 @@
       }
   },
   "forwardPorts": [3000,4444,7900,5900],
-  "containerEnv": {
-    "TARGET": "base"
-  },
   "shutdownAction": "stopCompose"
 }
