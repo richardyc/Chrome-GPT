@@ -30,7 +30,10 @@ def test_click() -> None:
         output = client.click_button_by_text('link with title "More information..."')
     finally:
         del client
-    assert output is not None and "Clicked interactable element and the website changed" in output
+    assert (
+        output is not None
+        and "Clicked interactable element and the website changed" in output
+    )
 
 
 def test_google_input() -> None:

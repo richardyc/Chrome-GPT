@@ -46,7 +46,8 @@ class SeleniumWrapper:
             chrome_options.add_argument("--start-maximized")
         if docker:
             self.driver = webdriver.Remote(
-                "http://selenium-chrome:4444/wd/hub",options=chrome_options,
+                "http://selenium-chrome:4444/wd/hub",
+                options=chrome_options,
             )
         else:
             self.driver = webdriver.Chrome(options=chrome_options)
@@ -54,10 +55,9 @@ class SeleniumWrapper:
 
     def __del__(self) -> None:
         """Close Selenium session."""
-        if hasattr(self,"driver") and self.driver != None:
+        if hasattr(self, "driver") and self.driver != None:
             self.driver.close()
             self.driver.quit()
-        
 
     def previous_webpage(self) -> str:
         """Go back in browser history."""
@@ -312,7 +312,7 @@ class SeleniumWrapper:
                     " website did not change after filling out form."
                 )
         except WebDriverException as e:
-            #print(e)
+            # print(e)
             return f"Error filling out form with input {form_input}, message: {e.msg}"
 
     def scroll(self, direction: str) -> str:
