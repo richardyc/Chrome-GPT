@@ -7,6 +7,9 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     build:
       target: test
+    depends_on: 
+      selenium-chrome:
+        condition: service_healthy
   selenium-chrome:
     extends:
       file: ../test.docker-compose.yaml
