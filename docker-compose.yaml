@@ -4,13 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: ${TARGET:-test}
+      target: ${TARGET:-dev}
       args:
-        - TARGET=${TARGET:-test}
-        - MAKE=${MAKE:-tests}  # Default value is "tests" if MAKE is not set
+        - TARGET=${TARGET:-dev}
+        - MAKE=${MAKE}  # Default value is "tests" if MAKE is not set
     environment:
-      - TARGET=${TARGET:-test}
-      - MAKE=${MAKE:-tests} 
+      - TARGET=${TARGET:-dev}
+      - MAKE=${MAKE} 
     depends_on: 
       selenium-chrome:
         condition: service_healthy
