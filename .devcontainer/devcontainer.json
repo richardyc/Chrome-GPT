@@ -1,5 +1,5 @@
 {
-  "dockerComposeFile": "./dev.docker-compose.yaml",
+  "dockerComposeFile": "../docker-compose.yaml",
   "service": "chromegpt",
   "workspaceFolder": "/app",
   "customizations": {
