@@ -4,9 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: ${TARGET:-dev}
+      target: ${TARGET:-dev} # Default value is "dev" 
       args:
-        #- TARGET=${TARGET:-dev} # Default value is "dev" 
+        #- TARGET=${TARGET:-dev} 
         - MAKE=${MAKE}  
     # environment:
     #   - TARGET=${TARGET:-dev}
