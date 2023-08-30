@@ -1,6 +1,6 @@
 """Integration test for Selenium API Wrapper."""
 
-from chromegpt.tools.driver import execute_with_driver, SeleniumWrapper
+from chromegpt.tools.driver import SeleniumWrapper, execute_with_driver
 
 
 @execute_with_driver

@@ -55,7 +55,7 @@ class SeleniumWrapper:
 
     def __del__(self) -> None:
         """Close Selenium session."""
-        if hasattr(self, "driver") and self.driver != None:
+        if hasattr(self, "driver") and self.driver is not None:
             self.driver.close()
             self.driver.quit()
 
