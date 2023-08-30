@@ -6,11 +6,10 @@ services:
       dockerfile: Dockerfile
       target: ${TARGET:-dev} # Default value is "dev" 
       args:
-        #- TARGET=${TARGET:-dev} 
         - MAKE=${MAKE}  
-    # environment:
-    #   - TARGET=${TARGET:-dev}
-    #   - MAKE=${MAKE} 
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REQUEST=${REQUEST} 
     depends_on: 
       # make sure the the image will be created only after Selenium is stable 
       # otherwise, tests a run before Selenium is accessible 
