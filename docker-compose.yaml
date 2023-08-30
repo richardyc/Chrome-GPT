@@ -6,13 +6,15 @@ services:
       dockerfile: Dockerfile
       target: ${TARGET:-dev}
       args:
-        - TARGET=${TARGET:-dev}
-        - MAKE=${MAKE}  # Default value is "tests" if MAKE is not set
-    environment:
-      - TARGET=${TARGET:-dev}
-      - MAKE=${MAKE} 
+        #- TARGET=${TARGET:-dev} # Default value is "dev" 
+        - MAKE=${MAKE}  
+    # environment:
+    #   - TARGET=${TARGET:-dev}
+    #   - MAKE=${MAKE} 
     depends_on: 
-      selenium-chrome:
+      # make sure the the image will be created only after Selenium is stable 
+      # otherwise, tests a run before Selenium is accessible 
+      selenium-chrome: 
         condition: service_healthy
 
 
@@ -26,7 +28,8 @@ services:
       - SE_NODE_MAX_SESSIONS=10       
       - SE_NODE_SESSION_TIMEOUT=30000 
     shm_size: "2g"
-    healthcheck:
+    # define Selenium stable 'Healthy' only after it's accessible.
+    healthcheck: 
       test: ["CMD", "curl", "-f", "http://selenium-chrome:4444/wd/hub/status"]
       interval: 10s  # Check every 30 seconds
       timeout: 5s   # Timeout after 10 seconds

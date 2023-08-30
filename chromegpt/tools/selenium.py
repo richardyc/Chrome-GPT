@@ -78,7 +78,8 @@ class SeleniumWrapper:
         results = self._get_google_search_results()
         return (
             "Which url would you like to goto? Provide the full url starting with http"
-            " or https to goto: " + json.dumps(results)
+            " or https to goto: "
+            + json.dumps(results)
         )
 
     def _get_google_search_results(self) -> List[Dict[str, Any]]:
