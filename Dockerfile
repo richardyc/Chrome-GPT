@@ -10,6 +10,8 @@ RUN pip install poetry==1.4.2
 RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-ansi
 
+CMD python -m chromegpt -v -t $REQUEST
+
 # image to dev
 FROM base as dev
 CMD sh -c "while sleep 1000; do :; done"
