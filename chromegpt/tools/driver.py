@@ -1,14 +1,15 @@
+from typing import Any, Callable
+
 from chromegpt.tools.selenium import SeleniumWrapper
 
 
-def execute_with_driver(test_function):
-    def wrapper(*args, **kwargs):
+def execute_with_driver(test_function: Callable[[SeleniumWrapper], None]) -> Callable:
+    def wrapper(*args: Any, **kwargs: Any) -> None:
         try:
             client = SeleniumWrapper(headless=True)
-            result = test_function(*args, **kwargs, client=client)
+            test_function(client, *args, **kwargs)
         finally:
             # release the driver
             del client
-        return result
 
     return wrapper
