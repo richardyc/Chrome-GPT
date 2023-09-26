@@ -27,7 +27,7 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 
 - There are limited web crawling features, with buttons and input fields sometimes failing to appear in prompt.
 - The response time is slow, with each action taking between 1-10 seconds to run.
-- At times, langchain agents are unable to parse GPT outputs (refer to langchain discussion: https://github.com/hwchase17/langchain/discussions/4065). If you run into this, try specifying a different agent; ie: `python -m chromegpt -a auto-gpt -v -t "{your request}"
+- At times, langchain agents are unable to parse GPT outputs (refer to langchain discussion: https://github.com/hwchase17/langchain/discussions/4065). If you run into this, try specifying a different agent; ie: `python -m chromegpt -a auto-gpt -v -t "{your request}"`
 
 <h2 align="center"> Requirements </h2>
 
