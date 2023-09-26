@@ -71,7 +71,7 @@ Options:
 
 Or Just update .env and
 
-`source .env & docker-compose up`
+`source .env && docker-compose up`
 
 <h2 align="center"> ⭐ Star History </h2>
 
