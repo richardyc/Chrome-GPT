@@ -1,4 +1,12 @@
 """Tool that calls Selenium."""
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
+
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
 import json
 import re
 import time
@@ -12,10 +20,6 @@ from selenium import webdriver
 from selenium.common.exceptions import (
     WebDriverException,
 )
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 
 from chromegpt.tools.utils import (
     find_parent_element_text,
@@ -110,7 +114,9 @@ class SeleniumWrapper:
                 )
 
         # Let driver wait for website to load
-        time.sleep(1)  # Wait for website to load
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        time.sleep(5)
+
 
         try:
             # Extract main content
@@ -222,25 +228,34 @@ class SeleniumWrapper:
                 self.driver.switch_to.window(self.driver.window_handles[-1])
                 self.driver.get(url)
                 # Let driver wait for website to load
-                time.sleep(1)  # Wait for website to load
+                time.sleep(5)
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
             except WebDriverException as e:
                 return f"Error loading url {url}, message: {e.msg}"
+
         fields = []
-        for element in self.driver.find_elements(By.XPATH, "//textarea | //input"):
-            label_txt = (
-                element.get_attribute("name")
-                or element.get_attribute("aria-label")
-                or find_parent_element_text(element)
-            )
-            if (
-                label_txt
-                and "\n" not in label_txt
-                and len(label_txt) < 100
-                and label_txt not in fields
-            ):
-                label_txt = prettify_text(label_txt)
-                fields.append(label_txt)
+        try:
+            for element in self.driver.find_elements(By.XPATH, "//textarea | //input"):
+                label_txt = (
+                    element.get_attribute("name")
+                    or element.get_attribute("aria-label")
+                    or find_parent_element_text(element)
+                )
+                if (
+                    label_txt
+                    and "\n" not in label_txt
+                    and len(label_txt) < 100
+                    and label_txt not in fields
+                ):
+                    label_txt = prettify_text(label_txt)
+                    fields.append(label_txt)
+        except StaleElementReferenceException:
+            # Handle the exception and maybe retry or log the error
+            pass
+
         return str(fields)
+
+
 
     def fill_out_form(self, form_input: Optional[str] = None, **kwargs: Any) -> str:
         """fill out form by form field name and input name"""
@@ -260,53 +275,59 @@ class SeleniumWrapper:
                 )
         elif not form_input:
             form_input = kwargs  # type: ignore
-        try:
-            for element in self.driver.find_elements(By.XPATH, "//textarea | //input"):
-                label_txt = (
-                    element.get_attribute("name")
-                    or element.get_attribute("aria-label")
-                    or find_parent_element_text(element)
-                )
-                if label_txt:
-                    label_txt = prettify_text(label_txt)
-                    for key in form_input.keys():  # type: ignore
-                        if prettify_text(key) == label_txt:
-                            # Scroll the element into view
-                            self.driver.execute_script(
-                                "arguments[0].scrollIntoView();", element
-                            )
-                            time.sleep(0.5)  # Allow some time for the page to settle
-                            try:
-                                # Try clearing the input field
-                                element.send_keys(Keys.CONTROL + "a")
-                                element.send_keys(Keys.DELETE)
-                                element.clear()
-                            except WebDriverException:
-                                pass
-                            element.send_keys(form_input[key])  # type: ignore
-                            filled_element = element
-                            break
-            if not filled_element:
-                return (
-                    f"Cannot find form with input: {form_input.keys()}."  # type: ignore
-                    f" Available form inputs: {self._find_form_fields()}"
-                )
-            before_content = self.describe_website()
-            filled_element.send_keys(Keys.RETURN)
-            after_content = self.describe_website()
-            if before_content != after_content:
-                return (
-                    f"Successfully filled out form with input: {form_input}, website"
-                    f" changed after filling out form. Now {after_content}"
-                )
-            else:
-                return (
-                    f"Successfully filled out form with input: {form_input}, but"
-                    " website did not change after filling out form."
-                )
-        except WebDriverException as e:
-            print(e)
-            return f"Error filling out form with input {form_input}, message: {e.msg}"
+
+        MAX_RETRIES = 3
+
+        for key, value in form_input.items():
+            retries = 0
+            while retries < MAX_RETRIES:
+                try:
+                    # Use explicit wait to find the element
+                    time.sleep(1)
+                    element = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, f"//textarea[@name='{key}'] | //input[@name='{key}']"))
+                    )
+                    # Scroll the element into view
+                    self.driver.execute_script("arguments[0].scrollIntoView();", element)
+
+                    # Clear the input field
+                    element.send_keys(Keys.CONTROL + "a")
+                    element.send_keys(Keys.DELETE)
+                    element.clear()
+
+                    # Send the input value
+                    element.send_keys(value)
+
+                    filled_element = element
+                    break  # Exit the while loop if successful
+                except StaleElementReferenceException:
+                    retries += 1
+                    if retries == MAX_RETRIES:
+                        return f"Failed to fill out form input {key} after {MAX_RETRIES} retries."
+                    continue
+                except WebDriverException as e:
+                    print(e)
+                return f"Error filling out form with input {form_input}, message: {e.msg}"
+
+        if not filled_element:
+            return (
+                f"Cannot find form with input: {form_input.keys()}."  # type: ignore
+                f" Available form inputs: {self._find_form_fields()}"
+            )
+        before_content = self.describe_website()
+        filled_element.send_keys(Keys.RETURN)
+        after_content = self.describe_website()
+        if before_content != after_content:
+            return (
+                f"Successfully filled out form with input: {form_input}, website"
+                f" changed after filling out form. Now {after_content}"
+            )
+        else:
+            return (
+                f"Successfully filled out form with input: {form_input}, but"
+                " website did not change after filling out form."
+            )
+
 
     def scroll(self, direction: str) -> str:
         # Get the height of the current window

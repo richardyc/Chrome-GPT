@@ -6,6 +6,8 @@ from typing import List, Optional
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from selenium import webdriver
+
 from unidecode import unidecode
 
 
