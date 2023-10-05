@@ -1,0 +1,35 @@
+version: '3'
+services:
+  chromegpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${TARGET:-dev} # Default value is "dev" 
+      args:
+        - MAKE=${MAKE}  
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REQUEST=${REQUEST} 
+    depends_on: 
+      # make sure the the image will be created only after Selenium is stable 
+      # otherwise, tests a run before Selenium is accessible 
+      selenium-chrome: 
+        condition: service_healthy
+
+
+  selenium-chrome:
+    image: selenium/standalone-chrome:latest
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+      - "5900:5900"
+    environment:
+      - SE_NODE_MAX_SESSIONS=10       
+      - SE_NODE_SESSION_TIMEOUT=30000 
+    shm_size: "2g"
+    # define Selenium stable 'Healthy' only after it's accessible.
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://selenium-chrome:4444/wd/hub/status"]
+      interval: 10s  # Check every 30 seconds
+      timeout: 5s   # Timeout after 10 seconds
+      retries: 3     # Retry 3 times before considering the container unhealthy

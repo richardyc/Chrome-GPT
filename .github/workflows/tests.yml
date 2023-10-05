@@ -1,12 +1,11 @@
 name: tests
-
+env:
+  TARGET: 'test'
+  MAKE: 'tests'
 on:
   push:
     branches: [main]
   pull_request:
-
-env:
-  POETRY_VERSION: "1.4.2"
 
 jobs:
   build:
@@ -16,18 +15,14 @@ jobs:
         python-version:
           - "3.10"
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Free disk space
         run: |
-          pipx install poetry==$POETRY_VERSION
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: poetry
-      - name: Install dependencies
-        run: |
-          poetry install
-      - name: Run all tests
-        run: |
-          make tests
+          df --human-readable
+          sudo apt clean
+          docker 2>/dev/null 1>&2 rmi $(docker image ls --all --quiet) || true
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          df --human-readable
+      - name: Test with pytest
+        run: docker-compose up --abort-on-container-exit

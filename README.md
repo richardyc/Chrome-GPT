@@ -2,6 +2,7 @@
  
 [![lint](https://github.com/richardyc/chrome-gpt/actions/workflows/lint.yml/badge.svg)](https://github.com/richardyc/chrome-gpt/actions/workflows/lint.yml) [![test](https://github.com/richardyc/chrome-gpt/actions/workflows/tests.yml/badge.svg)](https://github.com/richardyc/chrome-gpt/actions/workflows/tests.yml) [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/RealRichomie.svg?style=social&label=Follow%20%40RealRichomie)](https://twitter.com/RealRichomie)
 
+
 ⚠️This is an experimental AutoGPT agent that might take incorrect actions and could lead to serious consequences. Please use it at your own discretion⚠️
 
 Chrome-GPT is an AutoGPT experiment that utilizes [Langchain](https://github.com/hwchase17/langchain) and [Selenium](https://github.com/SeleniumHQ/selenium) to enable an AutoGPT agent take control of an entire Chrome session. With the ability to interactively scroll, click, and input text on web pages, the AutoGPT agent can navigate and manipulate web content.
@@ -26,7 +27,7 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 
 - There are limited web crawling features, with buttons and input fields sometimes failing to appear in prompt.
 - The response time is slow, with each action taking between 1-10 seconds to run.
-- At times, langchain agents are unable to parse GPT outputs (refer to langchain discussion: https://github.com/hwchase17/langchain/discussions/4065). If you run into this, try specifying a different agent; ie: `python -m chromegpt -a auto-gpt -v -t "{your request}"
+- At times, langchain agents are unable to parse GPT outputs (refer to langchain discussion: https://github.com/hwchase17/langchain/discussions/4065). If you run into this, try specifying a different agent; ie: `python -m chromegpt -a auto-gpt -v -t "{your request}"`
 
 <h2 align="center"> Requirements </h2>
 
@@ -40,6 +41,11 @@ Demo made by [Richard He](https://twitter.com/RealRichomie)
 2. Install Python requirements via poetry `poetry install`
 3. Open a poetry shell `poetry shell`
 4. Run chromegpt via `python -m chromegpt`
+
+
+You can start in you own codespace here:
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/erlichsefi/Chrome-GPT/codespaces)
 
 <h2 align="center"> 🧠 Usage </h2>
 
@@ -62,6 +68,10 @@ Options:
                                   when using auto-gpt agent
   --help                          Show this message and exit.
 ```
+
+Or Just update .env and
+
+`source .env && docker-compose up`
 
 <h2 align="center"> ⭐ Star History </h2>
 
