@@ -20,7 +20,7 @@ class AutoGPTAgent(ChromeGPTAgent):
     def __init__(
         self, model: str = "gpt-4", verbose: bool = False, continuous: bool = True
     ) -> None:
-        """Initialize the ZeroShotAgent."""
+        """Initialize the AutoGPTAgent."""
         self.agent = self._get_autogpt_agent(
             llm=ChatOpenAI(model_name=model, temperature=0),  # type: ignore
             verbose=verbose,
