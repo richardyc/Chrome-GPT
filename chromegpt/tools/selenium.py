@@ -1,13 +1,4 @@
 """Tool that calls Selenium."""
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException
-
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-
 import json
 import re
 import time
@@ -19,14 +10,20 @@ from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 from selenium import webdriver
 from selenium.common.exceptions import (
+    StaleElementReferenceException,
     WebDriverException,
 )
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from chromegpt.tools.utils import (
     find_parent_element_text,
     get_all_text_elements,
     prettify_text,
-    truncate_string_from_last_occurrence,
 )
 
 
