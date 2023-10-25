@@ -83,8 +83,7 @@ class SeleniumWrapper:
         results = self._get_google_search_results()
         return (
             "Which url would you like to goto? Provide the full url starting with http"
-            " or https to goto: "
-            + json.dumps(results)
+            " or https to goto: " + json.dumps(results)
         )
 
     def _get_google_search_results(self) -> List[Dict[str, Any]]:
@@ -123,9 +122,10 @@ class SeleniumWrapper:
                 )
 
         # Let driver wait for website to load
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
         time.sleep(5)
-
 
         try:
             # Extract main content
@@ -238,7 +238,9 @@ class SeleniumWrapper:
                 self.driver.get(url)
                 # Let driver wait for website to load
                 time.sleep(5)
-                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.TAG_NAME, "body"))
+                )
             except WebDriverException as e:
                 return f"Error loading url {url}, message: {e.msg}"
 
@@ -281,7 +283,9 @@ class SeleniumWrapper:
         else:
             form_input_dict = kwargs  # use kwargs if form_input is not a valid string
 
-        assert isinstance(form_input_dict, dict), "form_input should be a dictionary at this point."
+        assert isinstance(
+            form_input_dict, dict
+        ), "form_input should be a dictionary at this point."
 
         MAX_RETRIES = 3
 
@@ -294,10 +298,17 @@ class SeleniumWrapper:
                     # Use explicit wait to find the element
                     time.sleep(1)
                     element = WebDriverWait(self.driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, f"//textarea[@name='{key}'] | //input[@name='{key}']"))
+                        EC.presence_of_element_located(
+                            (
+                                By.XPATH,
+                                f"//textarea[@name='{key}'] | //input[@name='{key}']",
+                            )
+                        )
                     )
                     # Scroll the element into view
-                    self.driver.execute_script("arguments[0].scrollIntoView();", element)
+                    self.driver.execute_script(
+                        "arguments[0].scrollIntoView();", element
+                    )
 
                     # Clear the input field
                     element.send_keys(Keys.CONTROL + "a")
@@ -316,7 +327,6 @@ class SeleniumWrapper:
                     continue
                 except WebDriverException as e:
                     return f"Error filling out form with input {form_input}, message: {e.msg}"
-
 
         if not filled_element:
             return (
