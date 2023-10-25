@@ -83,7 +83,8 @@ class SeleniumWrapper:
         results = self._get_google_search_results()
         return (
             "Which url would you like to goto? Provide the full url starting with http"
-            " or https to goto: " + json.dumps(results)
+            " or https to goto: "
+            + json.dumps(results)
         )
 
     def _get_google_search_results(self) -> List[Dict[str, Any]]:
@@ -323,10 +324,16 @@ class SeleniumWrapper:
                 except StaleElementReferenceException:
                     retries += 1
                     if retries == MAX_RETRIES:
-                        return f"Failed to fill out form input {key} after {MAX_RETRIES} retries."
+                        return (
+                            f"Failed to fill out form input {key} after"
+                            f" {MAX_RETRIES} retries."
+                        )
                     continue
                 except WebDriverException as e:
-                    return f"Error filling out form with input {form_input}, message: {e.msg}"
+                    return (
+                        f"Error filling out form with input {form_input}, message:"
+                        f" {e.msg}"
+                    )
 
         if not filled_element:
             return (
