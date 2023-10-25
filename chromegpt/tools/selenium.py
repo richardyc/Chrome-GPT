@@ -6,6 +6,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 
 import json
 import re
@@ -263,30 +264,30 @@ class SeleniumWrapper:
 
         return str(fields)
 
-
-
     def fill_out_form(self, form_input: Optional[str] = None, **kwargs: Any) -> str:
         """fill out form by form field name and input name"""
         filled_element = None
-        if form_input and type(form_input) == str:
-            # Clean up form input
-            form_input_str = truncate_string_from_last_occurrence(
-                string=form_input, character="}"  # type: ignore
-            )
+
+        # If form_input is provided and is a string, try to parse it as JSON
+        if isinstance(form_input, str):
             try:
-                form_input = json.loads(form_input_str)
+                form_input_dict = json.loads(form_input)
             except json.decoder.JSONDecodeError:
                 return (
                     "Invalid JSON input. Please check your input is JSON format and try"
                     " again. Make sure to use double quotes for strings. Example input:"
                     ' {"email": "foo@bar.com","name": "foo bar"}'
                 )
-        elif not form_input:
-            form_input = kwargs  # type: ignore
+        else:
+            form_input_dict = kwargs  # use kwargs if form_input is not a valid string
+
+        assert isinstance(form_input_dict, dict), "form_input should be a dictionary at this point."
 
         MAX_RETRIES = 3
 
-        for key, value in form_input.items():
+        for key, value in form_input_dict.items():
+            # Rest of your logic remains unchanged
+
             retries = 0
             while retries < MAX_RETRIES:
                 try:
@@ -314,8 +315,8 @@ class SeleniumWrapper:
                         return f"Failed to fill out form input {key} after {MAX_RETRIES} retries."
                     continue
                 except WebDriverException as e:
-                    print(e)
-                return f"Error filling out form with input {form_input}, message: {e.msg}"
+                    return f"Error filling out form with input {form_input}, message: {e.msg}"
+
 
         if not filled_element:
             return (
